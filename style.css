@@ -1,0 +1,59 @@
+@font-face {
+    font-family: Dreadful-Regular;
+    src: url('Dreadful-Regular.otf') format('opentype');
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: purple;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-family: Dreadful-Regular;
+    font-size: 50px;
+    font-weight: 100;
+    margin-top: 0;
+    animation: colorChange 10s infinite;
+  }
+
+  @keyframes colorChange {
+    0% { color: white; }
+    50% { color: rgb(228, 38, 228); }
+    100% { color: white; }
+  }
+
+  .container {
+    background-color: rgb(255, 209, 255);
+    padding: 20px;
+    text-align: center;
+    border-radius: 0;
+    
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  form input {
+    border: 1px solid #000000;
+    background-color: #F8F8F8;
+    margin: 5px;
+  }
+
+  .forgot-password {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .forgot-password a {
+    color: rgb(228, 38, 228);
+  }
+  
+  /* Alinha os campos de e-mail e senha */
+  .form-fields {
+    display: flex;
+    justify-content: space-between;
+  }
