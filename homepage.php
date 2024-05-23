@@ -11,7 +11,8 @@
 
     include_once('config.php');
     //$sql = "SELECT * FROM usuarios ORDER BY idusuarios DESC";
-    $sql = "SELECT idusuarios FROM usuarios WHERE email='$logado'";
+    $sql = "SELECT idusuarios, nome FROM usuarios WHERE email='$logado'";
+    $sql_nome = "SELECT nome FROM usuarios WHERE email='$logado'";
     $result = $conexao->query($sql);
     ($user_data = mysqli_fetch_assoc($result));
 ?>
@@ -34,7 +35,7 @@
             <nav><a href="#">Amigos</a></nav>
             <nav><a href="#">Perfil</a></nav>
             <?php
-                echo "<nav><a href='#'>$logado</a></nav>";
+                echo "<nav><a href='#'>$user_data[nome]</a></nav>";
             ?>
             <nav><a href="logout.php">Sair</a></nav>
             <?php
