@@ -30,14 +30,19 @@
     <header>
         <a href="#"><h1 class="mil">Millenium</h1></a>
         <navbar>
-            <nav><a href="#">Página Inicial</a></nav>
+            <nav><a href="homepage.php">Página Inicial</a></nav>
             <nav><a href="#">Constelações</a></nav>
             <nav><a href="#">Amigos</a></nav>
-            <nav><a href="perfil.php">Perfil</a></nav>
+            <nav><a href="#">Perfil</a></nav>
+
         </navbar>
     </header>
     <main>
         <div class="container">
+        <?php
+            echo "<a href='deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";
+        ?>
+        <a href="logout.php">Sair</a>
             <div class="mini-perfil">
                 <div class="foto">
                 </div>
