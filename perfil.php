@@ -11,7 +11,7 @@
 
     include_once('config.php');
     //$sql = "SELECT * FROM usuarios ORDER BY idusuarios DESC";
-    $sql = "SELECT idusuarios, nome FROM usuarios WHERE email='$logado'";
+    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE email='$logado'";
     $sql_nome = "SELECT nome FROM usuarios WHERE email='$logado'";
     $result = $conexao->query($sql);
     ($user_data = mysqli_fetch_assoc($result));
@@ -31,7 +31,7 @@
         <a href="#"><h1 class="mil">Millenium</h1></a>
         <navbar>
             <nav><a href="homepage.php">Página Inicial</a></nav>
-            <nav><a href="#">Constelações</a></nav>
+            <nav><a href="constelacoes.php">Constelações</a></nav>
             <nav><a href="#">Amigos</a></nav>
             <nav><a href="#">Perfil</a></nav>
 
@@ -45,6 +45,7 @@
         <a href="logout.php">Sair</a>
             <div class="mini-perfil">
                 <div class="foto">
+                    <img height="180" width="180" src='<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
                 </div>
                 <div class="nome">
                     <?php
