@@ -26,7 +26,7 @@
         else {
                 $_SESSION['email'] = $email;
                 $_SESSION['senha'] = $senha;
-                header('Location: homepage.php');
+                header('Location: paginas/homepage.php');
         }
 
     } else {
