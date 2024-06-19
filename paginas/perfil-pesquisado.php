@@ -19,7 +19,7 @@
     ($user_data = mysqli_fetch_assoc($result));
 
     // dados do usuário pesquisado
-    $num_id = $_GET['id'];
+    $num_id = $_POST['id-user-pesquisado'];
     $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios='$num_id'";
     $resultado_pesquisado = $conexao->query($sql);
     ($user_pesq_data = mysqli_fetch_assoc($resultado_pesquisado));

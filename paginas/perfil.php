@@ -132,12 +132,18 @@
             const link = document.getElementById('link-perfil');
             const html = suggestions.map(user => {
                 if (user.idusuarios != user_logado['idusuarios']) {
-                    return `<a href='perfil-pesquisado.php?id=${user.idusuarios}'>
-                        <li>
-                            <img height='30px' width='30px' src="../${user.foto}">
-                            ${user.nome}
-                        </li>
-                    </a>`;
+                    return `<form action='perfil-pesquisado.php' method='post'>
+                                <input name='id-user-pesquisado' value='${user.idusuarios}' type='hidden'>
+                                <button type='submit' name='entrar'>
+
+                                        <img height='30px' width='30px' src="../${user.foto}">
+                                        ${user.nome}
+
+                                </button>
+                            </form>`
+                    /* return `<a href='perfil-pesquisado.php?id=${user.idusuarios}'>
+
+                    </a>`; */
                 } else {
                     return `<a href='#.php'>
                         <li>
