@@ -1,7 +1,7 @@
 <?php
 
     session_start();
-
+    include_once('../search_logic.php');
     include('../classes/post.php');
 
     // print_r($_SESSION);
@@ -54,6 +54,12 @@
             <nav><a href="constelacoes.php">Constelações</a></nav>
             <nav><a href="#">Amigos</a></nav>
             <nav><a href="perfil.php">Perfil</a></nav>
+            <nav>
+                <div class="pesquisa">
+                    <input type="text" id="searchInput" placeholder="Digite para buscar...">
+                    <ul id="suggestions"></ul>
+                </div>                
+            </nav>
         </navbar>
     </header>
     <main>
@@ -93,7 +99,6 @@
             </div>
         </div>
     </main>
-    
-    
+    <script src="../scripts/user-suggestions.php"></script>
 </body>
 </html>

@@ -1,38 +1,6 @@
 <?php
-
     session_start();
-
-    // print_r($_SESSION);
-    if((!isset($_SESSION['email']) == true) and (!isset($_SESSION['senha']) == true))
-    {
-        header('Location: index.php');
-    }
-    $logado = $_SESSION['email'];
-
-    include_once('../config.php');
-    //$sql = "SELECT * FROM usuarios ORDER BY idusuarios DESC";
-    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE email='$logado'";
-    $sql_nome = "SELECT nome FROM usuarios WHERE email='$logado'";
-    $result = $conexao->query($sql);
-    ($user_data = mysqli_fetch_assoc($result));
-
-    $userid = $user_data['idusuarios'];
-    $sql_post = "SELECT * FROM posts WHERE userid='$userid'";
-    $resultpost = $conexao->query($sql_post);
-    $post_data = array(); // Inicializa um array para armazenar todas as linhas
-
-    while ($row = mysqli_fetch_assoc($resultpost)) {
-        // Adiciona cada linha ao array $post_data
-        $post_data[] = $row;
-    }
-
-    $search_user = $conexao->query("SELECT * FROM usuarios");
-    $search_user_data = array();
-
-    while ($user_row = mysqli_fetch_assoc($search_user)) {
-        $search_user_data[] = $user_row;
-    }
-    
+    include_once('../search_logic.php');
 ?>
 
 <!DOCTYPE html>
@@ -108,64 +76,6 @@
             </div>
         </div>
     </main>
-    
-    <script>
-        const searchInput = document.getElementById('searchInput');
-        const suggestionsList = document.getElementById('suggestions');
-        const users = <?php echo json_encode($search_user_data); ?>; // Convertendo dados PHP para JSON
-        const user_logado = <?php echo json_encode($user_data); ?>; // Convertendo dados PHP para JSON
-
-        searchInput.addEventListener('input', function () {
-            const inputValue = this.value.toLowerCase();
-            let suggestions = [];
-            if (inputValue.length > 0) {
-                suggestions = users.filter(user =>
-                    user['nome'].toLowerCase().includes(inputValue)
-                );
-                displaySuggestions(suggestions);
-            } else {
-                suggestionsList.innerHTML = ''; // Limpa as sugestões se não houver entrada
-            }
-        });
-
-        function displaySuggestions(suggestions) {
-            const link = document.getElementById('link-perfil');
-            const html = suggestions.map(user => {
-                if (user.idusuarios != user_logado['idusuarios']) {
-                    return `<form action='perfil-pesquisado.php' method='post'>
-                                <input name='id-user-pesquisado' value='${user.idusuarios}' type='hidden'>
-                                <button type='submit' name='entrar'>
-
-                                        <img height='30px' width='30px' src="../${user.foto}">
-                                        ${user.nome}
-
-                                </button>
-                            </form>`
-                    /* return `<a href='perfil-pesquisado.php?id=${user.idusuarios}'>
-
-                    </a>`; */
-                } else {
-                    return `<a href='#.php'>
-                        <li>
-                            <img height='30px' width='30px' src="../${user.foto}">
-                            ${user.nome}
-                        </li>
-                    </a>`;
-                }
-            }).join('');
-            suggestionsList.innerHTML = html;
-            const userid_pesquisado = suggestions.map(user => user.idusuarios)
-            console.log(userid_pesquisado);
-
-            suggestionsList.querySelectorAll('li').forEach(li => {
-                li.addEventListener('click', function() {
-
-                    searchInput.value = this.textContent;
-                    suggestionsList.innerHTML = ''; // Limpa as sugestões ao selecionar
-                    searchInput.value = '';
-                });
-            });
-        }
-    </script>
+    <script src="../scripts/user-suggestions.php"></script>
 </body>
 </html>
