@@ -2,7 +2,7 @@
 
     if(!empty($_GET['idusuarios']))
     {
-        include_once('config.php');
+        include_once('../config.php');
 
         $idusuarios = $_GET['idusuarios'];
 
@@ -18,6 +18,6 @@
 
 
     }
-    header('Location: index.php');
+    header('Location: ../index.php');
 
 ?>

@@ -42,19 +42,12 @@
                 </div>
                 <div class="options">
                     <?php
-                        echo "<a href='deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";
+                        echo "<a href='../contas-options/deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";
                     ?>
                     <a href="../logout.php">Sair</a>
                 </div>
             </div>
             <div class="timeline">
-                <div class="novo-post">
-                    <form enctype="multipart/form-data" method="POST">
-                        <input name="post" type="text">
-                        <button type="submit">Lançar</button>
-                    </form>
-                </div>
-
                 <div class="posts-perfil">
                     <?php
                         foreach (array_reverse($post_data) as $linhapost) {
@@ -66,6 +59,9 @@
                             '</div>' .
                             '<div class="text-content">' .
                             $linhapost["post"] . 
+                            '</div>' .
+                            '<div class="arquivos">' .
+                            '<img height="300px" src=' . $linhapost["image"] . ' alt="erro na imagem"></img>' .
                             '</div>' .
                             '</div>' .
                             '<hr>';                        
