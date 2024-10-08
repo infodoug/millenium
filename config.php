@@ -1,9 +1,9 @@
 <?php
 
-    $dbHost = 'Localhost';
+    $dbHost = 'localhost';
     $dbUsername = 'root';
-    $dbPassword = '';
-    $dbName = 'contas-millenium';
+    $dbPassword = 'rl2002';
+    $dbName = 'millenium';
 
     $conexao = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
 

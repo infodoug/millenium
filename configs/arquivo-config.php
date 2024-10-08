@@ -1,7 +1,7 @@
 <?php
 
-  include('../config.php');
-  var_dump($_FILES);
+  //include('../config.php');
+  //var_dump($_FILES);
   if (isset($_FILES['arquivo'])) {
     $arquivo = $_FILES['arquivo'];
     if($arquivo['size'] > 2097152 * 25)
