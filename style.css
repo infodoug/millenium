@@ -4,6 +4,7 @@
   }
 
   body {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: purple;
@@ -20,6 +21,10 @@
     font-weight: 100;
     margin-top: 0;
     animation: colorChange 10s infinite;
+    letter-spacing: 0em;
+    opacity: 0;
+    color: white;
+
   }
 
   @keyframes colorChange {
@@ -54,6 +59,11 @@
   
   /* Alinha os campos de e-mail e senha */
   .form-fields {
+    margin: 5px;
     display: flex;
     justify-content: space-between;
+
+    input {
+      margin: 0;
+    }
   }
