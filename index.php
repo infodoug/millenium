@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <title>Millenium - Login</title>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <link href="script.js">
 </head>
 <body>
-  <h1>Millenium</h1>
+  <h1>Mi<span class="Ll">ll</span>enium</h1>
 
   <div class="container">
     <form action="testLogin.php" method="POST">
@@ -25,5 +24,6 @@
     </form>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

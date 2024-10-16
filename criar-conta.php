@@ -1,6 +1,7 @@
 <?php
 
   include('config.php');
+  include('./configs/arquivo-config.php');
 
   if (isset($_FILES['arquivo'])) {
     $arquivo = $_FILES['arquivo'];

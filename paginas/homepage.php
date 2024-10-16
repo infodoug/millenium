@@ -12,7 +12,8 @@
     $logado = $_SESSION['email'];
 
     include('../config.php');
-
+    include('../configs/arquivo-config.php');
+    
     $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE email='$logado'";
     $sql_nome = "SELECT nome FROM usuarios WHERE email='$logado'";
     $result = $conexao->query($sql);
@@ -25,9 +26,15 @@
         $post_result = $post->create_post($userid, $_POST);
         if($post_result != 'Digite algo para postar.<br>')
         {
-            $post_query = mysqli_query($conexao, "INSERT INTO posts(postid,userid,post) VALUES ('$post_result[0]','$userid','$post_result[1]')");
+            $post_query = mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
         }
     }
+
+
+
+/*      if(isset($_POST['submit'])) {
+        $result = mysqli_query($conexao, "INSERT INTO posts(image) VALUES ('$path')");
+      }  */
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +73,7 @@
             
                 <div class="novo-post">
                     <form enctype="multipart/form-data" method="POST">
+                        <input name="arquivo" type="file">
                         <input name="post" type="text">
                         <button type="submit">Lançar</button>
                     </form>
