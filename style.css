@@ -34,32 +34,67 @@
   }
 
   .container {
-    background-color: rgb(255, 209, 255);
-    padding: 20px;
+    background-color: white;
+    padding: 50px 60px 30px;
+    height: 306;
+    width: 362;
     text-align: center;
-    border-radius: 0;
+    border-radius: 20px;
     
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   }
 
-  form input {
-    border: 1px solid #000000;
-    background-color: #F8F8F8;
+  .form-fields input {
+    border: none;
+    border-radius: 10px;
+    box-shadow:inset 4px 4px 8px rgba(0, 0, 0, 0.25);
+    height: 40px;
+    width: 230px;
     margin: 5px;
+    padding: 3px 20px 3px;
   }
 
+  .inputSubmit {
+    border: none;
+    border-radius: 20px;
+    background-color: #A622A6;
+    color: white;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+    font-size: 20px;
+    height: 55px;
+    width: 160px;
+    transition: 0.6s;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #c429c4;
+    }
+  }
+
+  .nova-conta {
+    margin: 20px 0 0;
+    a {
+      text-decoration: none;
+      color: #A622A6;
+    }
+
+  }
+  
+
   .forgot-password {
+    display: none;
     margin-top: 20px;
     font-size: 14px;
   }
 
   .forgot-password a {
-    color: rgb(228, 38, 228);
+    text-decoration: none;
+    color: #A622A6;
   }
   
   /* Alinha os campos de e-mail e senha */
   .form-fields {
-    margin: 5px;
+    margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
 
