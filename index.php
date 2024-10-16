@@ -8,7 +8,7 @@
 <body>
   <h1>Mi<span class="Ll">ll</span>enium</h1>
 
-  <div class="container">
+  <div class="login" name="login">
     <form action="testLogin.php" method="POST">
       <div class="form-fields">
         <input type="text" placeholder ="email" name="email" required>
