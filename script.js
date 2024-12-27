@@ -10,6 +10,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         const title = "Millenium";
         const h1 = document.querySelector("h1");
+        const login = document.getElementsByClassName("login");
         h1.innerHTML = ""; // Limpa o conteúdo inicial
         let index = 0;
     
@@ -21,8 +22,11 @@
                 h1.style.opacity = 1;
                 h1.style.animation = 0;
             } else {
+                console.log(login);
                 h1.style.opacity = 1; // Torna o título visível após completar a digitação
                 h1.style.animation = "colorChange 10s infinite";
+                /* setTimeout(() => {login[0].classList.add("on")}, 500); */
+                login[0].classList.add("on")
             }
         }
     
