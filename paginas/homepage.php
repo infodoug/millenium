@@ -60,7 +60,7 @@
         <div class="container">
             <div class="mini-perfil">
                 <div class="foto">
-                    <img height="180" width="180" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
+                    <img height="125" width="125" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
                     
                 </div>
                 <div class="nome">
