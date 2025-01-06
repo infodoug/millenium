@@ -51,7 +51,7 @@
         <a href="#"><h1 class="mil">Millenium</h1></a>
         <navbar>
             <nav><a href="homepage.php">Página Inicial</a></nav>
-            <nav><a href="constelacoes.php">Constelações</a></nav>
+            <!-- <nav><a href="constelacoes.php">Constelações</a></nav> -->
             <nav><a href="#">Amigos</a></nav>
             <nav><a href="perfil.php">Perfil</a></nav>
             <nav>
