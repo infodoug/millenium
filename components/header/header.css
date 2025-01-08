@@ -38,3 +38,33 @@ header navbar a{
 header navbar a:hover{
     color:whitesmoke;
 }
+
+.config-button{
+    background: none;
+    border: 0;
+    padding: 0;
+    :hover{
+        cursor: pointer;
+    }
+    img{
+        height: 35px;
+    }
+}
+
+.config-options{
+    display: none;
+
+    &.active{
+        display: block;
+        position: absolute;
+        ul{
+            list-style-type: none;
+            button{
+                background: none;
+                border: 0;
+                padding: 0;
+            }
+        }
+        
+    }
+}

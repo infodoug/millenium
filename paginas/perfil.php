@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../pages.css">
     <link rel="stylesheet" href="perfil.css">
-    <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="../components/header/header.css">
     <title>Millenium - <?php echo $user_data['nome'] ?></title>
 </head>
 <body>
@@ -86,6 +86,12 @@
             script.src = "../scripts/user-suggestions.php";
             script.defer = true;
             document.body.appendChild(script);
+
+            // Inclui o script de configurações após o carregamento do header
+            const scriptConfig = document.createElement("script");
+            scriptConfig.src = "../components/header/header.js";
+            scriptConfig.defer = true;
+            document.body.appendChild(scriptConfig);
         });
     </script>
 </body>
