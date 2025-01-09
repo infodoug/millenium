@@ -78,21 +78,27 @@
 
                     // Força a rolagem para o topo após carregar o header
                     window.scrollTo(0, 0); // Rola para o topo da página
-                })
-                .catch(error => console.error('Erro ao carregar header:', error));
-
-            // Inclui o script de sugestões após o carregamento do header
-            const script = document.createElement("script");
-            script.src = "../scripts/user-suggestions.php";
-            script.defer = true;
-            document.body.appendChild(script);
 
             // Inclui o script de configurações após o carregamento do header
             const scriptConfig = document.createElement("script");
             scriptConfig.src = "../components/header/header.js";
             scriptConfig.defer = true;
             document.body.appendChild(scriptConfig);
+
+            // Inclui o script de sugestões após o carregamento do header
+            const script = document.createElement("script");
+            script.src = "../scripts/user-suggestions.php";
+            script.defer = true;
+            document.body.appendChild(script);
+            })
+            .catch(error => console.error('Erro ao carregar header:', error));
         });
+
+
+
+
+
+        
     </script>
 </body>
 </html>
