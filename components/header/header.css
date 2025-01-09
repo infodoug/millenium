@@ -57,6 +57,11 @@ header navbar a:hover{
     &.active{
         display: block;
         position: absolute;
+        background-color: white;
+        height: 100px;
+        width: 150px;
+        border-radius: 20px;
+        box-shadow: 0.02px 0.02px 10px rgba(68, 0, 68, 0.432);
         ul{
             list-style-type: none;
             button{
