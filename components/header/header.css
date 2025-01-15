@@ -32,7 +32,7 @@ header navbar{
 }
 
 header navbar a{
-    color:rgb(255, 177, 255);
+    color:#FFB1FF;
 }
 
 header navbar a:hover{
@@ -57,9 +57,11 @@ header navbar a:hover{
     &.active{
         display: block;
         position: absolute;
+        right: 170px;
+        top: 38px;
         background-color: white;
-        height: 100px;
-        width: 150px;
+        height: 90px;
+        width: 160px;
         border-radius: 20px;
         box-shadow: 0.02px 0.02px 10px rgba(68, 0, 68, 0.432);
         ul{
@@ -68,6 +70,38 @@ header navbar a:hover{
                 background: none;
                 border: 0;
                 padding: 0;
+                height: 45px;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &:hover{
+                    cursor: pointer;
+                }
+                &.botao-minha-conta{
+                    border-top-right-radius: 20px;
+                    border-top-left-radius: 20px;
+                    background-color: #f7f7f7;
+                    a{
+                        color: #800080;
+                    }
+                    &:hover{
+                        background-color: #FFFFFF;
+                    }
+                }
+
+                &.botao-sair{
+                    border-bottom-right-radius: 20px;
+                    border-bottom-left-radius: 20px;
+                    background-color: #EF889A;
+                    a{
+                        color: #FFFFFF;
+                    }
+                    &:hover{
+                        background-color: #f07488;
+                    }
+                }
             }
         }
         

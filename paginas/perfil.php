@@ -29,12 +29,6 @@
                                 echo $user_data['nome'];
                             ?>
                         </div>
-                        <div class="options">
-                            <?php
-                                echo "<a href='../contas-options/deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";
-                            ?>
-                            <a href="../logout.php">Sair</a>
-                        </div>
                     </div>
 
                 </div>
@@ -63,7 +57,12 @@
                 </div>
             </div>
             <div class="side-perfil">
-                
+                <p>excluir\/</p>
+                <div class="options" style="display: none">
+                    <?php
+                        echo "<a href='../contas-options/deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";
+                    ?>
+                </div>
             </div>
         </div>
     </main>
