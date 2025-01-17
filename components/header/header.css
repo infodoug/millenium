@@ -43,38 +43,50 @@ header navbar a:hover{
     background: none;
     border: 0;
     padding: 0;
-    :hover{
+    &:hover{
         cursor: pointer;
     }
-    img{
+    .img-config{
         height: 35px;
+        transition: transform 0.25s ease-in-out;
+        &.rotated{
+            transform: rotate(-55deg);
+        }
     }
 }
 
 .config-options{
-    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.3s, height 0.3s;
+    height: 0;
 
-    &.active{
-        display: block;
+
         position: absolute;
         right: 170px;
         top: 38px;
         background-color: white;
-        height: 90px;
+        
         width: 160px;
         border-radius: 20px;
         box-shadow: 0.02px 0.02px 10px rgba(68, 0, 68, 0.432);
+
+        a{
+            visibility: hidden;
+        }
+
         ul{
             list-style-type: none;
             button{
                 background: none;
                 border: 0;
                 padding: 0;
-                height: 45px;
+                height: 0;
                 width: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                transition: height 0.3s;
 
                 &:hover{
                     cursor: pointer;
@@ -84,6 +96,7 @@ header navbar a:hover{
                     border-top-left-radius: 20px;
                     background-color: #f7f7f7;
                     a{
+                        /* visibility: hidden; */
                         color: #800080;
                     }
                     &:hover{
@@ -96,6 +109,7 @@ header navbar a:hover{
                     border-bottom-left-radius: 20px;
                     background-color: #EF889A;
                     a{
+                        /* visibility: hidden; */
                         color: #FFFFFF;
                     }
                     &:hover{
@@ -104,6 +118,17 @@ header navbar a:hover{
                 }
             }
         }
-        
-    }
+        &.active{
+            /* display: block;  */
+            visibility: visible;
+            opacity: 1;
+            height: 90px;
+            button{
+                height: 45px;
+            }
+
+            a{
+                visibility: visible;
+            }
+        }
 }
