@@ -44,23 +44,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../pages.css">
+    
     <title>Millenium - Início</title>
 </head>
 <body>
-    <header>
-        <a href="#"><h1 class="mil">Millenium</h1></a>
-        <navbar>
-            <nav><a href="#">Página Inicial</a></nav>
-            <nav><a href="constelacoes.php">Constelações</a></nav>
-            <nav><a href="#">Amigos</a></nav>
-            <nav><a href="perfil.php">Perfil</a></nav>
-        </navbar>
-    </header>
+    <div id="header-container"></div>
     <main>
         <div class="container">
             <div class="mini-perfil">
                 <div class="foto">
-                    <img height="180" width="180" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
+                    <img height="125" width="125" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
                     
                 </div>
                 <div class="nome">
@@ -86,6 +79,32 @@
         </div>
     </main>
     
-    
+    <script>
+        // Espera o DOM carregar completamente antes de executar o script
+        document.addEventListener("DOMContentLoaded", function() {
+            // Carrega o header.html no container apropriado
+            fetch('../components/header/header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+
+                    // Força a rolagem para o topo após carregar o header
+                    window.scrollTo(0, 0); // Rola para o topo da página
+
+            // Inclui o script de configurações após o carregamento do header
+            const scriptConfig = document.createElement("script");
+            scriptConfig.src = "../components/header/header.js";
+            scriptConfig.defer = true;
+            document.body.appendChild(scriptConfig);
+
+            // Inclui o script de sugestões após o carregamento do header
+            const script = document.createElement("script");
+            script.src = "../scripts/user-suggestions.php";
+            script.defer = true;
+            document.body.appendChild(script);
+            })
+            .catch(error => console.error('Erro ao carregar header:', error));
+        });
+    </script>
 </body>
 </html>
