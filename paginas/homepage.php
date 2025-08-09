@@ -62,17 +62,13 @@
                     ?>
                 </div>
             </div>
-            <div class="timeline">
-            
-                <div class="novo-post">
-                    <form enctype="multipart/form-data" method="POST">
-                        <input name="arquivo" type="file">
-                        <input name="post" type="text">
-                        <button type="submit">Lançar</button>
-                    </form>
-                </div>
+
+            <div class="center">
+                <div id="novo-post"></div>
+                <div class="timeline"></div>
 
             </div>
+ 
             <div class="social">
                 
             </div>
@@ -81,6 +77,15 @@
     
     <script>
         // Espera o DOM carregar completamente antes de executar o script
+        document.addEventListener("DOMContentLoaded", function() {
+            // Carrega o header.html no container apropriado
+            fetch('../components/new-post/new-post.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('novo-post').innerHTML = data;
+            });
+        });
+
         document.addEventListener("DOMContentLoaded", function() {
             // Carrega o header.html no container apropriado
             fetch('../components/header/header.html')

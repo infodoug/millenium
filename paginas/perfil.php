@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="side-perfil">
-                <p>excluir\/</p>
+                <!-- <p>excluir\/</p> -->
                 <div class="options" style="display: none">
                     <?php
                         echo "<a href='../contas-options/deletar-conta.php?idusuarios=$user_data[idusuarios]'>Excluir Conta</a>";

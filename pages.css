@@ -32,8 +32,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* background-color: #FFFFFF; */
-    background-color: #d12c2c;
+    background-color: #fff;
     height: 500px;
     width: 200px;
     border-radius: 20px 20px 20px 20px;
@@ -71,7 +70,7 @@ body {
 .social {
     height: 250px;
     width: 320px;
-    background-color: #FFFFFF;
+    background-color: #fff;
 }
 
 .posts-perfil {

@@ -1,5 +1,6 @@
 header{
     position: fixed;
+    height: 50px;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -18,16 +19,44 @@ header .mil{
     font-weight: 100;
 }
 
+.search-bar{
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input{
+    border-radius: 20px;
+    height: 40px;
+    border: none;
+    width: 450px;
+    background: url('../../assets/icons/ic--round-search.png') no-repeat right 10px center;
+    background-size: 20px 20px;
+
+    &:focus{
+        outline: none;
+        background-color: #FFFFFF;
+    }
+
+    &:not(:focus){
+        background-color: rgba(224, 224, 224, 0.5);
+        transition: background-color 1s;
+        &:hover{
+            background-color: rgba(224, 224, 224, 0.7);
+        }
+
+    }
+}
+
 header a{
     text-decoration: none;
 }
 
 header navbar{
-    width: 50%;
+    width: 25%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
     font-weight: bold;
 }
 
@@ -63,7 +92,7 @@ header navbar a:hover{
 
 
         position: absolute;
-        right: 170px;
+        right: 60px;
         top: 38px;
         background-color: white;
         
