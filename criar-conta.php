@@ -51,31 +51,30 @@
 <meta charset="UTF-8">
   <title>Millenium - Criar Conta</title>
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="styles/criar-conta.css">
   <link href="script.js">
 </head>
 <body>
   <h1>Criar Conta</h1>
 
+  <div id="new-account-container">
+    <form action="" enctype="multipart/form-data" method="POST">
+      <label for="">Foto de Perfil:</label><br>
+      <input name="arquivo" type="file"><br>
 
 
+      <label for="nome">Nome de Usuário:</label><br>
+      <input type="text" name="nome" id="nome" class="inputUser" required><br><br>
 
-  
-  <form action="" enctype="multipart/form-data" method="POST">
-    <label for="">Foto de Perfil:</label><br>
-    <input name="arquivo" type="file"><br>
+      <label for="email">E-mail:</label><br>
+      <input type="email" name="email" id="email" class="inputUser" required><br><br>
 
+      <label for="senha">Senha:</label><br>
+      <input type="password" name="senha" id="senha" class="inputUser" required><br><br>
 
-    <label for="nome">Nome de Usuário:</label><br>
-    <input type="text" name="nome" id="nome" class="inputUser" required><br><br>
-
-    <label for="email">E-mail:</label><br>
-    <input type="email" name="email" id="email" class="inputUser" required><br><br>
-
-    <label for="senha">Senha:</label><br>
-    <input type="password" name="senha" id="senha" class="inputUser" required><br><br>
-
-    <input type="submit" name="submit" id="submit">
-  </form>
+      <input type="submit" name="submit" id="submit">
+    </form>
+  </div>
 
 </body>
 </html>

@@ -1,0 +1,9 @@
+h1 {
+    color: whitesmoke;
+    opacity: 1;
+}
+#new-account-container{
+    background-color: whitesmoke;
+    padding: 50px;
+    border-radius: 20px;
+}
