@@ -1,0 +1,21 @@
+.friend-button {
+  background-color: #37c447;
+  height: fit-content;
+  font-size: 16px;
+  font-weight: bold;
+  color: #f5f5f5;
+  padding: 5px;
+  border-radius: 50px;
+  border: none;
+}
+
+.friend-button:hover {
+  background-color: #33d346;
+  cursor: pointer;
+}
+
+.friend-button.unsend {
+  display: none;
+  background-color: #f54a42;
+  font-size: 13px;
+}

@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="../pages.css">
     <link rel="stylesheet" href="perfil.css">
     <link rel="stylesheet" href="../components/header/header.css">
+    <link rel="stylesheet" href="../components/friend-button.css">
     <title>Millenium - <?php echo $user_data['nome'] ?></title>
 </head>
 <body>
@@ -63,8 +64,11 @@
                             echo $user_pesq_data['nome'];
                         ?>
                         </div>
-                        <button class="button-addFriend" onclick="sendFriendRequest()">
-                            Adicionar amigo
+                        <button class="friend-button" onclick="sendFriendRequest()">
+                            + Adicionar amigo
+                        </button>
+                        <button class="friend-button unsend" onclick="sendFriendRequest()">
+                            × Remover pedido de amizade
                         </button>
 
                     </div>
@@ -126,12 +130,37 @@
             document.body.appendChild(script);
             })
             .catch(error => console.error('Erro ao carregar header:', error));
+
+            
         });
 
 
-        
+        let askedFriendship = false;
+            let friendButton = document.querySelector('.friend-button');
+            let friendButtonUnsend = document.querySelector('.friend-button.unsend');
+            if (!askedFriendship) {
+                friendButton.style.display = 'block';
+                friendButtonUnsend.style.display = 'none';
+            } else {
+                friendButton.style.display = 'none';
+                friendButtonUnsend.style.display = 'block';
+            }
 
         function sendFriendRequest() {
+            
+            askedFriendship = !askedFriendship;
+            let friendButton = document.querySelector('.friend-button');
+            let friendButtonUnsend = document.querySelector('.friend-button.unsend');
+            if (!askedFriendship) {
+                friendButton.style.display = 'block';
+                friendButtonUnsend.style.display = 'none';
+            } else {
+                friendButton.style.display = 'none';
+                friendButtonUnsend.style.display = 'block';
+            }
+            
+
+            //friendButton.classList.toggle('unsend');
             // Pegamos os IDs gerados pelo PHP e guardamos em variáveis JS
             let idSolicitante = "<?php echo $user_data['idusuarios']; ?>";
             let idSolicitado = "<?php echo $user_pesq_data['idusuarios']; ?>";
@@ -149,10 +178,10 @@
             .then(response => response.text())
             .then(data => {
                 if(data.includes("sucesso")) {
-                    alert("Solicitação de amizade enviada!");
+                    //alert("Solicitação de amizade enviada!");
                     // Opcional: Mudar o texto do botão para "Enviado"
                 } else {
-                    alert("Erro ao enviar solicitação.");
+                    //alert("Erro ao enviar solicitação.");
                     console.log(data);
                 }
             })
