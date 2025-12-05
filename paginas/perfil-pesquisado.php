@@ -134,17 +134,34 @@
             
         });
 
+        <?php
+            $id_user = $user_data['idusuarios'];
+            $id_friend = $user_pesq_data['idusuarios'];
+            $request_sent = "SELECT * FROM friends
+                                    WHERE (id_solicitante = '$id_user' AND id_solicitado = '$id_friend')";
+                                    
 
-        let askedFriendship = false;
+            $check_request_sent = (($conexao->query($request_sent))->num_rows > 0) ? true : false;
+        ?>
+
+
+        let askedFriendship = <?php echo json_encode($check_request_sent);?>;
+        
+        document.addEventListener('DOMContentLoaded', function() {
             let friendButton = document.querySelector('.friend-button');
             let friendButtonUnsend = document.querySelector('.friend-button.unsend');
-            if (!askedFriendship) {
-                friendButton.style.display = 'block';
-                friendButtonUnsend.style.display = 'none';
-            } else {
-                friendButton.style.display = 'none';
-                friendButtonUnsend.style.display = 'block';
+
+            if (friendButton && friendButtonUnsend) {
+                if (!askedFriendship) {
+                    friendButton.style.display = 'block';
+                    friendButtonUnsend.style.display = 'none';
+                } else {
+                    friendButton.style.display = 'none';
+                    friendButtonUnsend.style.display = 'block';
+                }
             }
+        });
+
 
         function sendFriendRequest() {
             

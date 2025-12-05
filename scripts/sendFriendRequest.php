@@ -32,8 +32,14 @@ if(isset($_POST['id_solicitante']) && isset($_POST['id_solicitado'])){
     // sql DELETE row WHERE friend request found
 
 
-
+ 
     if($conexao->query($sql) === TRUE) {
+        echo "sucesso";
+    } else {
+        echo "erro";
+    } 
+
+    if($check_request_sent) {
         echo "sucesso";
     } else {
         echo "erro";
