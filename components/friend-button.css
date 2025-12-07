@@ -4,7 +4,7 @@
   font-size: 16px;
   font-weight: bold;
   color: #f5f5f5;
-  padding: 5px;
+  padding: 7px;
   border-radius: 50px;
   border: none;
 }
@@ -18,4 +18,31 @@
   display: none;
   background-color: #f54a42;
   font-size: 13px;
+}
+
+.decide-friendship {
+  display: flex;
+}
+
+.friend-button.accept {
+  background-color: #800080;
+  font-size: 13px;
+  border-radius: 50px 0 0 50px;
+  transition: 300ms;
+
+  &:hover {
+    background-color: #a622a6;
+  }
+}
+
+.friend-button.decline {
+  background-color: #dadada;
+  font-size: 13px;
+  border-radius: 0 50px 50px 0;
+  transition: 300ms;
+  color: black;
+
+  &:hover {
+    background-color: #eaeaea;
+  }
 }

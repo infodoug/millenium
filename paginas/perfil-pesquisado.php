@@ -71,6 +71,15 @@
                             × Remover pedido de amizade
                         </button>
 
+                        <div class="decide-friendship">
+                            <button class="friend-button accept" onclick="sendFriendRequest()">
+                                Aceitar pedido de amizade
+                            </button>
+                            <button class="friend-button decline" onclick="sendFriendRequest()">
+                                × Recusar 
+                            </button>
+                        </div>
+
                     </div>
 
                 </div>
@@ -134,6 +143,39 @@
             
         });
 
+        // > Botão de amizade na visão do SOLICITADO
+        <?php
+            $id_user = $user_data['idusuarios'];
+            $id_friend = $user_pesq_data['idusuarios'];
+            $request_received = "SELECT * FROM friends
+                                    WHERE (id_solicitante = '$id_friend' AND id_solicitado = '$id_user')";
+                                    
+
+            $check_request_received = (($conexao->query($request_received))->num_rows > 0) ? true : false;
+        ?>
+
+        let receivedFriendship = <?php echo json_encode($check_request_received);?>;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            let decideFriendship = document.querySelector('.decide-friendship');
+            //let declineButton = document.querySelector('.friend-button.decline');
+
+            
+
+            //if (decideFriendship && friendButtonUnsend) {
+            if (decideFriendship) {
+                if (!receivedFriendship) {
+                    decideFriendship.style.display = 'none';
+                } else {
+                    decideFriendship.style.display = 'flex';
+                }
+            }
+        });
+        
+        // <
+        
+
+        // > Botão de amizade na visão do SOLICITANTE
         <?php
             $id_user = $user_data['idusuarios'];
             $id_friend = $user_pesq_data['idusuarios'];
@@ -151,7 +193,7 @@
             let friendButton = document.querySelector('.friend-button');
             let friendButtonUnsend = document.querySelector('.friend-button.unsend');
 
-            if (friendButton && friendButtonUnsend) {
+            if (friendButton && friendButtonUnsend && !receivedFriendship) {
                 if (!askedFriendship) {
                     friendButton.style.display = 'block';
                     friendButtonUnsend.style.display = 'none';
@@ -159,6 +201,9 @@
                     friendButton.style.display = 'none';
                     friendButtonUnsend.style.display = 'block';
                 }
+            } else if (receivedFriendship) {
+                    friendButton.style.display = 'none';
+                    friendButtonUnsend.style.display = 'none';
             }
         });
 
@@ -205,7 +250,7 @@
             .catch(error => console.error('Erro:', error));
         }
         
-
+        // <
 
 
 
