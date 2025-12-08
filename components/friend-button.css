@@ -46,3 +46,25 @@
     background-color: #eaeaea;
   }
 }
+
+.unfriendArea {
+  display: none;
+  position: relative;
+}
+
+.friend-button.isFriend {
+  background-color: #dadada;
+  position: absolute;
+  width: max-content;
+  /* z-index: 1; */
+}
+/* .unfriendArea:hover .friend-button.isFriend {
+  z-index: 0;
+} */
+
+.friend-button.unfriend {
+  background-color: #f54a42;
+  color: #f5f5f5;
+  position: absolute;
+  width: max-content;
+}

@@ -71,11 +71,23 @@
                             × Remover pedido de amizade
                         </button>
 
+                        <div class="unfriendArea">
+                            <button class="friend-button isFriend" style="display: none;">
+                                ✓ Amigo
+                            </button>
+
+                            <button class="friend-button unfriend" onclick="unfriend()" style="display: none;">
+                                × Desfazer amizade
+                            </button>
+                        </div>
+
+
+
                         <div class="decide-friendship">
-                            <button class="friend-button accept" onclick="sendFriendRequest()">
+                            <button class="friend-button accept" onclick="acceptFriendship()">
                                 Aceitar pedido de amizade
                             </button>
-                            <button class="friend-button decline" onclick="sendFriendRequest()">
+                            <button class="friend-button decline" onclick="unfriend()">
                                 × Recusar 
                             </button>
                         </div>
@@ -140,7 +152,47 @@
             })
             .catch(error => console.error('Erro ao carregar header:', error));
 
-            
+
+            let decideFriendship = document.querySelector('.decide-friendship');
+            let friendButton = document.querySelector('.friend-button');
+            let friendButtonUnsend = document.querySelector('.friend-button.unsend');
+            decideFriendship.style.display = 'none';
+            friendButton.style.display = 'none';
+            friendButtonUnsend.style.display = 'none';
+        });
+
+
+        <?php
+            $id_user = $user_data['idusuarios'];
+            $id_friend = $user_pesq_data['idusuarios'];
+            $isFriend = "SELECT * FROM friends
+                                    WHERE (id_solicitante = '$id_user' AND id_solicitado = '$id_friend' AND isFriend = 1)
+                                    OR (id_solicitante = '$id_friend' AND id_solicitado = '$id_user' AND isFriend = 1)";
+
+            $check_isFriend = (($conexao->query($isFriend))->num_rows > 0) ? true : false;
+
+        ?>
+
+        let isFriend = <?php echo json_encode($check_isFriend);?>;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isFriend) {
+                // Quando já são amigos, esconder todos os botões de amizade
+                // exceto o botão de 'unfriend' (remover amizade).
+                let allFriendButtons = document.querySelectorAll('.friend-button');
+                let unfriendArea = document.querySelector('.unfriendArea');
+                let decideFriendship = document.querySelector('.decide-friendship');
+                allFriendButtons.forEach(btn => {
+                    if (btn.classList.contains('unfriend') || btn.classList.contains('isFriend')) {
+                        btn.style.display = 'block';
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                });
+                if (decideFriendship) decideFriendship.style.display = 'none';
+
+                if (unfriendArea) unfriendArea.style.display = 'flex';
+            }
         });
 
         // > Botão de amizade na visão do SOLICITADO
@@ -175,6 +227,32 @@
         // <
         
 
+        function acceptFriendship() {
+            let idSolicitante = "<?php echo $user_data['idusuarios']; ?>";
+            let idSolicitado = "<?php echo $user_pesq_data['idusuarios']; ?>";
+
+            let formData = new FormData();
+            formData.append('id_solicitante', idSolicitante);
+            formData.append('id_solicitado', idSolicitado);
+
+            fetch('../scripts/acceptFriendRequest.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if(data.includes("sucesso")) {
+                    console.log("Amizade aceita!");
+                    // Recarrega a página ou atualiza a interface
+                    location.reload();
+                } else {
+                    console.error(data);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+
         // > Botão de amizade na visão do SOLICITANTE
         <?php
             $id_user = $user_data['idusuarios'];
@@ -197,7 +275,7 @@
                 if (!askedFriendship) {
                     friendButton.style.display = 'block';
                     friendButtonUnsend.style.display = 'none';
-                } else {
+                } else if (askedFriendship && !isFriend){
                     friendButton.style.display = 'none';
                     friendButtonUnsend.style.display = 'block';
                 }
@@ -205,6 +283,36 @@
                     friendButton.style.display = 'none';
                     friendButtonUnsend.style.display = 'none';
             }
+
+
+            // > alternacao entre isFriend e unfriend
+            let unfriendArea = document.querySelector('.unfriendArea');
+            let isFriendButton = document.querySelector('.isFriend');
+            let unfriendButton = document.querySelector('.unfriend');
+
+            if (unfriendArea) {
+                if (isFriendButton) isFriendButton.style.display = 'block';
+                if (unfriendButton) unfriendButton.style.display = 'none';
+
+
+                unfriendArea.addEventListener('mouseenter', () => {
+                    if (isFriendButton) isFriendButton.style.display = 'none';
+                    if (unfriendButton) unfriendButton.style.display = 'block';
+                });
+
+                unfriendArea.addEventListener('mouseleave', () => {
+                    if (isFriendButton) isFriendButton.style.display = 'block';
+                    if (unfriendButton)  unfriendButton.style.display = 'none';
+                });
+            }
+
+            if (!isFriend) {
+                    if (isFriendButton) isFriendButton.style.display = 'none';
+                    if (unfriendButton)  unfriendButton.style.display = 'none';
+            }
+            // <
+
+
         });
 
 
@@ -250,6 +358,55 @@
             .catch(error => console.error('Erro:', error));
         }
         
+        function unfriend() {
+            // Atualiza apenas a interface. A ação no servidor deve ser implementada separadamente.
+            if (isFriend){
+                if (!confirm('Tem certeza que deseja remover esta amizade?')) return;
+            }
+
+            let friendButton = document.querySelector('.friend-button');
+            let friendButtonUnsend = document.querySelector('.friend-button.unsend');
+            let unfriendButton = document.querySelector('.friend-button.unfriend');
+
+            if (unfriendButton) unfriendButton.style.display = 'none';
+            if (friendButton) friendButton.style.display = 'block';
+            if (friendButtonUnsend) friendButtonUnsend.style.display = 'none';
+
+
+            let unfriendArea = document.querySelector('.unfriendArea');
+
+            if (unfriendArea) unfriendArea.style.display = 'none';
+
+            // TODO: implementar chamada ao servidor para remover amizade.
+            console.log('unfriend clicked — implementar remoção no servidor.');
+
+            let idSolicitante = "<?php echo $user_data['idusuarios']; ?>";
+            let idSolicitado = "<?php echo $user_pesq_data['idusuarios']; ?>";
+
+            // Cria os dados para enviar
+            let formData = new FormData();
+            formData.append('id_solicitante', idSolicitante);
+            formData.append('id_solicitado', idSolicitado);
+
+            // Envia para o arquivo PHP separado
+            fetch('../scripts/unfriend.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if(data.includes("sucesso")) {
+                    //alert("Solicitação de amizade enviada!");
+                    // Opcional: Mudar o texto do botão para "Enviado"
+                } else {
+                    //alert("Erro ao enviar solicitação.");
+                    console.log(data);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+
+            location.reload();
+        }
         // <
 
 
