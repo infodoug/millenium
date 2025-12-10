@@ -309,6 +309,7 @@
             if (!isFriend) {
                     if (isFriendButton) isFriendButton.style.display = 'none';
                     if (unfriendButton)  unfriendButton.style.display = 'none';
+                    
             }
             // <
 
@@ -356,6 +357,7 @@
                 }
             })
             .catch(error => console.error('Erro:', error));
+            
         }
         
         function unfriend() {
@@ -374,8 +376,8 @@
 
 
             let unfriendArea = document.querySelector('.unfriendArea');
-
             if (unfriendArea) unfriendArea.style.display = 'none';
+            
 
             // TODO: implementar chamada ao servidor para remover amizade.
             console.log('unfriend clicked — implementar remoção no servidor.');
@@ -396,8 +398,7 @@
             .then(response => response.text())
             .then(data => {
                 if(data.includes("sucesso")) {
-                    //alert("Solicitação de amizade enviada!");
-                    // Opcional: Mudar o texto do botão para "Enviado"
+                    location.reload();
                 } else {
                     //alert("Erro ao enviar solicitação.");
                     console.log(data);
@@ -405,7 +406,7 @@
             })
             .catch(error => console.error('Erro:', error));
 
-            location.reload();
+            
         }
         // <
 
