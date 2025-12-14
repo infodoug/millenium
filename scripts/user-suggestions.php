@@ -26,22 +26,22 @@ function displaySuggestions(suggestions) {
     const link = document.getElementById('link-perfil');
     const html = suggestions.map(user => {
         if (user.idusuarios != user_logado['idusuarios']) {
-            return `<form action='perfil-pesquisado.php' method='post'>
+            return `<form action='/millenium/paginas/perfil-pesquisado.php' method='post'>
                         <input name='id-user-pesquisado' value='${user.idusuarios}' type='hidden'>
                         <button type='submit' name='entrar'>
 
-                                <img height='30px' width='30px' src="../${user.foto}">
+                                <img height='30px' width='30px' src="/millenium/${user.foto}">
                                 ${user.nome}
 
                         </button>
                     </form>`
-            /* return `<a href='perfil-pesquisado.php?id=${user.idusuarios}'>
+            /* return `<a href='/millenium/paginas/perfil-pesquisado.php?id=${user.idusuarios}'>
 
             </a>`; */
         } else {
-            return `<a href='perfil.php'>
+            return `<a href='/millenium/paginas/perfil.php'>
                 <li>
-                    <img height='30px' width='30px' src="../${user.foto}">
+                    <img height='30px' width='30px' src="/millenium/${user.foto}">
                     ${user.nome}
                 </li>
             </a>`;
