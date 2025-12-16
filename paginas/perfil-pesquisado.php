@@ -18,20 +18,45 @@
     $result = $conexao->query($sql);
     ($user_data = mysqli_fetch_assoc($result));
 
-    // dados do usuário pesquisado
-    $num_id = $_POST['id-user-pesquisado'];
-    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios='$num_id'";
-    $resultado_pesquisado = $conexao->query($sql);
-    ($user_pesq_data = mysqli_fetch_assoc($resultado_pesquisado));
+    // dados do usuário pesquisado (aceita GET 'id' ou POST 'id-user-pesquisado')
+    $num_id = null;
+    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+        $num_id = (int) $_GET['id'];
+    } elseif (isset($_POST['id-user-pesquisado']) && is_numeric($_POST['id-user-pesquisado'])) {
+        $num_id = (int) $_POST['id-user-pesquisado'];
+    }
 
-    // posts do usuário pesquisado
-    $sql_post = "SELECT * FROM posts WHERE userid='$num_id'";
-    $resultpost = $conexao->query($sql_post);
-    $post_data = array(); // Inicializa um array para armazenar todas as linhas
+    if (empty($num_id)) {
+        die('ID inválido.');
+    }
 
-    while ($row = mysqli_fetch_assoc($resultpost)) {
-        // Adiciona cada linha ao array $post_data
-        $post_data[] = $row;
+    // busca usuário pesquisado com prepared statement
+    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios = ?";
+    if ($stmtp = $conexao->prepare($sql)) {
+        $stmtp->bind_param("i", $num_id);
+        $stmtp->execute();
+        $resultado_pesquisado = $stmtp->get_result();
+        $user_pesq_data = $resultado_pesquisado->fetch_assoc();
+        $stmtp->close();
+    } else {
+        die('Erro na consulta ao usuário.');
+    }
+
+    if (empty($user_pesq_data)) {
+        die('Usuário não encontrado.');
+    }
+
+    // posts do usuário pesquisado (prepared)
+    $post_data = array();
+    $sql_post = "SELECT * FROM posts WHERE userid = ?";
+    if ($stmtpost = $conexao->prepare($sql_post)) {
+        $stmtpost->bind_param("i", $num_id);
+        $stmtpost->execute();
+        $resultpost = $stmtpost->get_result();
+        while ($row = $resultpost->fetch_assoc()) {
+            $post_data[] = $row;
+        }
+        $stmtpost->close();
     }
 
 

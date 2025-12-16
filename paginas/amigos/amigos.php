@@ -47,11 +47,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../../components/header/header.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&family=Lilita+One&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="../../pages.css">
-  <link rel="stylesheet" href="../../../perfil.css">
-  <link rel="stylesheet" href="../../components/header/header.css">
+  <link rel="stylesheet" href="../../paginas/perfil.css">
   <link rel="stylesheet" href="../../components/friend-button.css">
+  <link rel="stylesheet" href="friends-page.css">
   <title>Millenium - <?php echo $user_data['nome'] ?></title>
 </head>
 <body>
@@ -60,36 +64,42 @@
         include('../../components/header/header.html'); 
     ?>
 
+  <h1 class="friends-title">Meus amigos</h1>
+
+  <hr>
+
   <div id="friends-list">
-    <?php foreach ($friends as $friend): ?>
-      <div class="friend">
-        <?php
+    <?php foreach ($friends as $friend):
+      $friend_id = ($friend['id_solicitante'] == $user_id) ? $friend['id_solicitado'] : $friend['id_solicitante'];
 
-          if ($friend['isFriend'] == 1) {
+      // só exibe se amizade confirmada
+      if ((int)$friend['isFriend'] !== 1) continue;
 
-            // Aqui você pode buscar o nome e a foto do amigo usando o id do solicitante ou solicitado
-            $friend_id = ($friend['id_solicitante'] == $user_id) ? $friend['id_solicitado'] : $friend['id_solicitante'];
-            $friend_sql = "SELECT nome, foto FROM usuarios WHERE idusuarios = ?";
-            if ($friend_stmt = $conexao->prepare($friend_sql)) {
-                $friend_stmt->bind_param("i", $friend_id);
-                $friend_stmt->execute();
-                $friend_result = $friend_stmt->get_result();
-                $friend_data = $friend_result->fetch_assoc();
-
-                // ajusta caminho da imagem conforme sua estrutura (ex.: /millenium/uploads/)
-                $photo_path = !empty($friend_data['foto']) 
-                    ? '/millenium/' . $friend_data['foto'] 
-                    : '/millenium/assets/icons/default-avatar.png';
-
-                echo '<img class="friend-photo" src="'.htmlspecialchars($photo_path).'" alt="'.htmlspecialchars($friend_data['nome']).'"> ';
-                echo htmlspecialchars($friend_data['nome']); // Exibe o nome do amigo
-
-                $friend_stmt->close();
-            }
-            
+      // busca nome e foto do amigo
+      $friend_sql = "SELECT nome, foto FROM usuarios WHERE idusuarios = ?";
+      $friend_data = ['nome' => 'Usuário', 'foto' => ''];
+      if ($friend_stmt = $conexao->prepare($friend_sql)) {
+          $friend_stmt->bind_param("i", $friend_id);
+          $friend_stmt->execute();
+          $friend_result = $friend_stmt->get_result();
+          if ($rowf = $friend_result->fetch_assoc()) {
+              $friend_data = $rowf;
           }
-        ?>
-      </div>
+          $friend_stmt->close();
+      }
+
+      $photo_path = !empty($friend_data['foto'])
+          ? '/millenium/' . $friend_data['foto']
+          : '/millenium/assets/icons/default-avatar.png';
+    ?>
+      <a class="friend" href="/millenium/paginas/perfil-pesquisado.php?id=<?php echo (int)$friend_id; ?>">
+        <div class="container-friend-photo">
+          <img class="friend-photo" src="<?php echo htmlspecialchars($photo_path); ?>" alt="<?php echo htmlspecialchars($friend_data['nome']); ?>">
+        </div>
+        <div class="container-friend-info">
+          <p><?php echo htmlspecialchars($friend_data['nome']); ?></p>
+        </div>
+      </a>
     <?php endforeach; ?>
   </div>
 

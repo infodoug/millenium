@@ -1,0 +1,79 @@
+.exo-fonte-padrao {
+}
+
+body {
+  background-color: #facffa;
+  font-family: "Exo", sans-serif;
+}
+
+.friends-title {
+  color: #a622a6;
+  font-size: 42px;
+  text-align: center;
+  margin-top: 60px;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background-color: #a622a6;
+  margin: 10px 50px 0 50px;
+}
+
+#friends-list {
+  margin: 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
+}
+
+.friend {
+  width: 362px;
+  height: 175px;
+  border-radius: 20px;
+  background-color: #a622a6;
+  position: relative;
+  display: flex;
+  align-items: center;
+  transition: linear 300ms;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    cursor: pointer;
+    color: #800080;
+  }
+}
+
+.container-friend-photo {
+  height: 90px;
+  width: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 15px solid #facffa;
+  position: absolute;
+  left: -30px;
+}
+
+.friend-photo {
+  height: 90px;
+  width: 90px;
+}
+
+.container-friend-info {
+  background-color: #fdfdfd;
+  align-self: flex-end;
+  height: 50%;
+  width: 100%;
+  border-radius: 0 300px 70px 70px;
+  display: grid;
+  grid-template-columns: 0.35fr 1fr 0.2fr;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+
+  p {
+    grid-column: 2/3;
+  }
+}

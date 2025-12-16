@@ -1,163 +1,162 @@
-header{
-    position: fixed;
-    height: 50px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    background-color: #800080;
-    border-radius: 5px 5px 20px 20px;
-    z-index: 10;
-    top: 0;
+header {
+  position: fixed;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background-color: #800080;
+  border-radius: 5px 5px 20px 20px;
+  z-index: 10;
+  top: 0;
 }
 
-header .mil{
-    margin-left: 20px;
-    margin-right: 40px;
-    color: white;
-    font-family: Dreadful-Regular;
-    font-size: 50px;
-    font-weight: 100;
+header .mil {
+  margin-left: 20px;
+  margin-right: 40px;
+  color: white;
+  font-family: Dreadful-Regular;
+  font-size: 50px;
+  font-weight: 100;
 }
 
-.search-bar{
-    display: flex;
-    align-items: center;
+.search-bar {
+  display: flex;
+  align-items: center;
 }
 
-.search-bar input{
-    border-radius: 20px;
-    height: 40px;
-    border: none;
-    width: 450px;
-    background: url('../../assets/icons/ic--round-search.png') no-repeat right 10px center;
-    background-size: 20px 20px;
+.search-bar input {
+  border-radius: 20px;
+  height: 40px;
+  border: none;
+  width: 450px;
+  background: url("../../assets/icons/ic--round-search.png") no-repeat right
+    10px center;
+  background-size: 20px 20px;
 
-    &:focus{
-        outline: none;
-        background-color: #FFFFFF;
+  &:focus {
+    outline: none;
+    background-color: #fdfdfd;
+  }
+
+  &:not(:focus) {
+    background-color: rgba(224, 224, 224, 0.5);
+    transition: background-color 1s;
+    &:hover {
+      background-color: rgba(224, 224, 224, 0.7);
     }
+  }
+}
 
-    &:not(:focus){
-        background-color: rgba(224, 224, 224, 0.5);
-        transition: background-color 1s;
-        &:hover{
-            background-color: rgba(224, 224, 224, 0.7);
-        }
+header a {
+  text-decoration: none;
+}
 
+header navbar {
+  width: 25%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+header navbar a {
+  color: #ffb1ff;
+}
+
+header navbar a:hover {
+  color: whitesmoke;
+}
+
+.config-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  &:hover {
+    cursor: pointer;
+  }
+  .img-config {
+    height: 35px;
+    transition: transform 0.25s ease-in-out;
+    &.rotated {
+      transform: rotate(-55deg);
     }
+  }
 }
 
-header a{
-    text-decoration: none;
-}
+.config-options {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s, visibility 0.3s, height 0.3s;
+  height: 0;
 
-header navbar{
-    width: 25%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    font-weight: bold;
-}
+  position: absolute;
+  right: 60px;
+  top: 38px;
+  background-color: white;
 
-header navbar a{
-    color:#FFB1FF;
-}
+  width: 160px;
+  border-radius: 20px;
+  box-shadow: 0.02px 0.02px 10px rgba(68, 0, 68, 0.432);
 
-header navbar a:hover{
-    color:whitesmoke;
-}
-
-.config-button{
-    background: none;
-    border: 0;
-    padding: 0;
-    &:hover{
-        cursor: pointer;
-    }
-    .img-config{
-        height: 35px;
-        transition: transform 0.25s ease-in-out;
-        &.rotated{
-            transform: rotate(-55deg);
-        }
-    }
-}
-
-.config-options{
+  a {
     visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.5s, visibility 0.3s, height 0.3s;
-    height: 0;
+  }
 
+  ul {
+    list-style-type: none;
+    button {
+      background: none;
+      border: 0;
+      padding: 0;
+      height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: height 0.3s;
 
-        position: absolute;
-        right: 60px;
-        top: 38px;
-        background-color: white;
-        
-        width: 160px;
-        border-radius: 20px;
-        box-shadow: 0.02px 0.02px 10px rgba(68, 0, 68, 0.432);
-
-        a{
-            visibility: hidden;
+      &:hover {
+        cursor: pointer;
+      }
+      &.botao-minha-conta {
+        border-top-right-radius: 20px;
+        border-top-left-radius: 20px;
+        background-color: #f7f7f7;
+        a {
+          /* visibility: hidden; */
+          color: #800080;
         }
-
-        ul{
-            list-style-type: none;
-            button{
-                background: none;
-                border: 0;
-                padding: 0;
-                height: 0;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: height 0.3s;
-
-                &:hover{
-                    cursor: pointer;
-                }
-                &.botao-minha-conta{
-                    border-top-right-radius: 20px;
-                    border-top-left-radius: 20px;
-                    background-color: #f7f7f7;
-                    a{
-                        /* visibility: hidden; */
-                        color: #800080;
-                    }
-                    &:hover{
-                        background-color: #FFFFFF;
-                    }
-                }
-
-                &.botao-sair{
-                    border-bottom-right-radius: 20px;
-                    border-bottom-left-radius: 20px;
-                    background-color: #EF889A;
-                    a{
-                        /* visibility: hidden; */
-                        color: #FFFFFF;
-                    }
-                    &:hover{
-                        background-color: #f07488;
-                    }
-                }
-            }
+        &:hover {
+          background-color: #fdfdfd;
         }
-        &.active{
-            /* display: block;  */
-            visibility: visible;
-            opacity: 1;
-            height: 90px;
-            button{
-                height: 45px;
-            }
+      }
 
-            a{
-                visibility: visible;
-            }
+      &.botao-sair {
+        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        background-color: #ef889a;
+        a {
+          /* visibility: hidden; */
+          color: #fdfdfd;
         }
+        &:hover {
+          background-color: #f07488;
+        }
+      }
+    }
+  }
+  &.active {
+    /* display: block;  */
+    visibility: visible;
+    opacity: 1;
+    height: 90px;
+    button {
+      height: 45px;
+    }
+
+    a {
+      visibility: visible;
+    }
+  }
 }
