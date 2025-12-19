@@ -4,6 +4,7 @@
 body {
   background-color: #facffa;
   font-family: "Exo", sans-serif;
+  position: relative;
 }
 
 .friends-title {
@@ -75,5 +76,111 @@ hr {
 
   p {
     grid-column: 2/3;
+  }
+}
+
+#widget-pendentes {
+  background-color: #fdfdfd;
+  width: 329px;
+  max-height: 50px;
+
+  position: fixed;
+  bottom: 0;
+  right: 104px;
+  border-radius: 20px 20px 0 0;
+
+  overflow-y: hidden;
+  transition: max-height ease-in-out 800ms;
+}
+/* barra de rolagem */
+#widget-pendentes::-webkit-scrollbar-thumb {
+  background-color: #800080;
+  border-radius: 0;
+}
+/* Personaliza a barra inteira */
+::-webkit-scrollbar {
+  width: 2px; /* Largura da barra */
+}
+::-webkit-scrollbar:hover {
+  width: 4px;
+}
+
+#widget-pendentes:hover {
+  /* bottom: 0; */
+  right: 104px;
+  border-radius: 20px 20px 0 0;
+  height: fit-content;
+  max-height: 350px;
+}
+
+#widget-pendentes .pendente-container .img-container {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  align-self: center;
+}
+
+#widget-pendentes .pendente-container .img-container img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+#widget-pendentes .header {
+  display: grid;
+  grid-template-columns: 0.3fr 1fr;
+  margin: 15px 0 40px 0;
+  column-gap: 5px;
+}
+
+#widget-pendentes .header img {
+  justify-self: end;
+  align-self: center;
+}
+
+#widget-pendentes .pendente-container {
+  width: 300px;
+  height: 50px;
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: 65px max-content 1fr 15px 12px 15px;
+  justify-self: center;
+}
+
+#widget-pendentes .pendente-container p {
+  font-weight: bold;
+  align-self: center;
+}
+
+#widget-pendentes .pendente-container .pendente-infos {
+  position: absolute;
+  width: 250px;
+  height: 50px;
+}
+
+#widget-pendentes .pendente-container .accept {
+  height: fit-content;
+  width: fit-content;
+  align-self: center;
+  grid-column: 4/5;
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+#widget-pendentes .pendente-container .refuse {
+  height: fit-content;
+  width: fit-content;
+  align-self: center;
+  grid-column: 6/7;
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
   }
 }

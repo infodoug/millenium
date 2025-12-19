@@ -107,3 +107,12 @@ body {
   flex-direction: row;
   align-items: center;
 }
+
+::-webkit-scrollbar-thumb {
+  background-color: #800080;
+  border-radius: 0;
+}
+/* Personaliza a barra inteira */
+::-webkit-scrollbar {
+  width: 5px; /* Largura da barra */
+}

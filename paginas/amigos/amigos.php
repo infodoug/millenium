@@ -37,6 +37,22 @@
         $friends = [];
     }
 
+    // busca todas as linhas na tabela friends onde o usuário é SOLICITADO e NAO AMIGO
+    if ($stmt = $conexao->prepare("SELECT * FROM friends WHERE (id_solicitado = ?) AND isFriend = 0")) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        $pendentes = [];
+        while ($row = $res->fetch_assoc()) {
+            $pendentes[] = $row;
+        }
+
+        $stmt->close();
+    } else {
+        // erro na preparação da query
+        $pendentes = [];
+    }
 
 
 ?>
@@ -67,6 +83,47 @@
   <h1 class="friends-title">Meus amigos</h1>
 
   <hr>
+  <?php
+/* echo '<pre>';
+var_dump($pendentes);
+echo '</pre>'; */
+?>
+
+  <div id="widget-pendentes">
+    <div class="header">
+      <img src="/millenium/assets/icons/arrow-down.png" alt="">
+      <p>Solicitações de amizade</p>
+    </div>
+    <?php foreach ($pendentes as $pend) :
+
+      // dados usuario pendente
+      $sql_pendente = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios=$pend[id_solicitante]";
+      $result_pendente = $conexao->query($sql_pendente);
+      ($user_pendente = mysqli_fetch_assoc($result_pendente));
+
+    ?>
+
+    <div class="pendente-container">
+      <a class="pendente-infos" href="/millenium/paginas/perfil-pesquisado.php?id=<?php echo (int)$user_pendente['idusuarios']; ?>"></a>
+      <div class="img-container">
+        <img src="../../<?php echo $user_pendente['foto'] ?>" alt="">
+      </div>
+      <p><?php echo $user_pendente['nome']?></p>
+      <button class="accept" onclick="acceptFriendship(<?php echo $user_pendente['idusuarios'] ?>, <?php echo $user_id ?>)">
+        <img src="/millenium/assets/icons/check-purple.png" alt="">
+      </button>
+      <button class="refuse" onclick="declineFriendship(<?php echo $user_pendente['idusuarios'] ?>, <?php echo $user_id ?>)">
+        <img src="/millenium/assets/icons/x-gray.png" alt="">
+      </button>
+    </div>
+
+    <?php endforeach; ?>
+
+  </div>
+    
+
+
+
 
   <div id="friends-list">
     <?php foreach ($friends as $friend):
@@ -105,6 +162,70 @@
 
   <script src="/millenium/components/header/header.js" defer></script>
   <script src="/millenium/scripts/user-suggestions.php" defer></script>
+
+  <script>
+
+      // função que aceita amizade
+    function acceptFriendship(idSolicitante, idSolicitado) {
+
+        let formData = new FormData();
+        formData.append('id_solicitante', idSolicitante);
+        formData.append('id_solicitado', idSolicitado);
+
+        fetch('/millenium/scripts/acceptFriendRequest.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            if(data.includes("sucesso")) {
+                console.log("Amizade aceita!");
+                // Recarrega a página ou atualiza a interface
+                location.reload();
+            } else {
+                console.error(data);
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+
+      // função que recusa amizade
+    function declineFriendship(idSolicitante, idSolicitado) {
+
+        let formData = new FormData();
+        formData.append('id_solicitante', idSolicitante);
+        formData.append('id_solicitado', idSolicitado);
+
+        fetch('/millenium/scripts/unfriend.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            if(data.includes("sucesso")) {
+                console.log("Pedido recusado!");
+                // Recarrega a página ou atualiza a interface
+                location.reload();
+            } else {
+                console.error(data);
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+
+  </script>
+
+
+  <!-- função para expandir e colapsar widget de solicitações -->
+  <script>
+    let widgetPendentes = document.getElementById('widget-pendentes');
+    widgetPendentes.addEventListener("mouseenter", (e) => {
+      widgetPendentes.classList.add("open");
+    });
+    widgetPendentes.addEventListener("mouseleave", (e) => {
+      widgetPendentes.classList.remove("open");
+    });
+  </script>
 
 
 

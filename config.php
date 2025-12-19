@@ -1,6 +1,6 @@
 <?php
 
-    $dbHost = 'localhost';
+     $dbHost = 'localhost';
     $dbUsername = 'root';
     $dbPassword = 'rl2002';
     $dbName = 'millenium';
@@ -15,4 +15,12 @@
     {
         echo "Conectado!";
     } */
+?>
+
+<?php
+/*     $pdo = new PDO(
+        "mysql:host=localhost;dbname=millenium;charset=utf8",
+        "root",
+        "rl2002"
+    ); */
 ?>

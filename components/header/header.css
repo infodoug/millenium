@@ -160,3 +160,28 @@ header navbar a:hover {
     }
   }
 }
+
+/* pending friend requests star */
+.pending-star {
+  display: none;
+  margin-left: 0;
+  font-size: 9px;
+  color: #f8d6f8;
+  vertical-align: middle;
+  margin-bottom: 10px;
+}
+.pending-star.visible {
+  display: inline-block;
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

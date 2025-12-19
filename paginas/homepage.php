@@ -21,6 +21,7 @@
 
     // postagem
     $userid = $user_data['idusuarios'];
+    $user_id = (int) $userid;
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $post = new Post();
         $post_result = $post->create_post($userid, $_POST);
@@ -30,11 +31,55 @@
         }
     }
 
-
+    // Falta fazer a postagem não precisar de imagem
 
 /*      if(isset($_POST['submit'])) {
         $result = mysqli_query($conexao, "INSERT INTO posts(image) VALUES ('$path')");
       }  */
+
+
+    // busca todas as linhas na tabela friends onde o usuário é solicitante ou solicitado
+    if ($stmt = $conexao->prepare("SELECT * FROM friends WHERE (id_solicitante = ? OR id_solicitado = ?) AND isFriend = 1")) {
+        $stmt->bind_param("ii", $user_id, $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        $friends = [];
+        while ($row = $res->fetch_assoc()) {
+            $friends[] = $row;
+        }
+
+        $stmt->close();
+    } else {
+        // erro na preparação da query
+        $friends = [];
+    }
+
+
+    // posts dos amigos — buscar todos os posts dos amigos em uma query ordenada (mais recentes primeiro)
+    $post_data = array();
+    // coletar ids dos amigos
+    $friend_ids = array();
+    foreach ($friends as $f) {
+        $fid = ($f['id_solicitante'] == $user_id) ? (int)$f['id_solicitado'] : (int)$f['id_solicitante'];
+        $friend_ids[] = $fid;
+    }
+
+    if (!empty($friend_ids)) {
+        // montar lista segura de inteiros
+        $friend_ids = array_map('intval', $friend_ids);
+        $ids_list = implode(',', $friend_ids);
+
+        // buscar posts com dados do autor, ordenados por postid desc (mais novo primeiro)
+        $sql_posts = "SELECT p.*, u.nome, u.foto FROM posts p JOIN usuarios u ON p.userid = u.idusuarios WHERE p.userid IN (" . $ids_list . ") ORDER BY p.postid DESC";
+        if ($res_posts = $conexao->query($sql_posts)) {
+            while ($row = $res_posts->fetch_assoc()) {
+                $post_data[] = $row;
+            }
+        }
+    }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +110,34 @@
 
             <div class="center">
                 <div id="novo-post"></div>
-                <div class="timeline"></div>
+                <div class="timeline">
+                    <div class="posts-amigos">
+                        <?php
+                            foreach (array_reverse($post_data) as $linhapost) {
+                                $author_photo = !empty($linhapost['foto']) ? '../' . $linhapost['foto'] : '../assets/icons/default-avatar.png';
+                                $author_name = htmlspecialchars($linhapost['nome'] ?? 'Usuário');
+                                $post_text = htmlspecialchars($linhapost['post'] ?? '');
+                                $post_image = $linhapost['image'] ?? '';
+
+                                echo '<div class="post">';
+                                echo '<div class="post-header">';
+                                echo '<img height="20" width="20" src="' . htmlspecialchars($author_photo) . '" alt="erro na imagem"></img>';
+                                echo '<p>' . $author_name . '</p>';
+                                echo '</div>';
+
+                                echo '<div class="text-content">' . $post_text . '</div>';
+
+                                if (!empty($post_image)) {
+                                    echo '<div class="arquivos"><img height="300px" src="' . htmlspecialchars($post_image) . '" alt="erro na imagem"></img></div>';
+                                } else {
+                                    echo '<div class="arquivos"></div>';
+                                }
+
+                                echo '</div><hr>';
+                            }
+                        ?>
+                    </div>
+                </div>
 
             </div>
  
