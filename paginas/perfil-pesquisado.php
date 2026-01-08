@@ -131,6 +131,8 @@
                             '<p>' . $user_pesq_data['nome'] . '</p>' .
                             '</div>' .
                             '<div class="text-content">' .
+                            '<img height="300px" src=' . $linhapost['image'] . '>' .
+                            '<br>' .
                             $linhapost["post"] . 
                             '</div>' .
                             '</div>' .
