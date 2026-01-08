@@ -3,7 +3,7 @@
 <body>
   <div class="newpostdiv">
     <div class="formContainer">
-      <form enctype="multipart/form-data" method="POST">
+      <form action="homepage.php" enctype="multipart/form-data" method="POST">
         <input class="input-text" name="post" type="text" />
         <label for="arquivo">
           <img class="add-image" src="../assets/icons/addImg.png" alt="falha" />
@@ -11,7 +11,14 @@
         </label>
         <input name="arquivo" type="file" id="arquivo" />
 
-        <button class="buttonLaunch" type="submit">Lançar</button>
+        <button
+          name="action"
+          value="make_post"
+          class="buttonLaunch"
+          type="submit"
+        >
+          Lançar
+        </button>
       </form>
     </div>
   </div>

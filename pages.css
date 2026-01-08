@@ -64,6 +64,10 @@ body {
   border-radius: 20px 20px 20px 20px;
 }
 
+.posts-amigos {
+  width: 100%;
+}
+
 .social {
   height: 250px;
   width: 320px;
@@ -79,6 +83,11 @@ body {
   flex-direction: column;
   width: auto;
   padding: 20px;
+  text-align: center;
+}
+
+.post.arquivos {
+  align-self: center;
 }
 
 .post-header {
@@ -115,4 +124,23 @@ body {
 /* Personaliza a barra inteira */
 ::-webkit-scrollbar {
   width: 5px; /* Largura da barra */
+}
+
+.comment-area {
+  height: 200px;
+  background-color: #ececec;
+}
+
+.post .my-comment {
+  display: grid;
+  grid-template-columns: auto 80% 2% max-content auto;
+}
+
+.post textarea {
+  grid-column: 2/3;
+}
+
+.post .send-comment {
+  width: max-content;
+  grid-column: 4/5;
 }

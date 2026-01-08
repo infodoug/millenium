@@ -22,12 +22,43 @@
     // postagem
     $userid = $user_data['idusuarios'];
     $user_id = (int) $userid;
+
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $post = new Post();
-        $post_result = $post->create_post($userid, $_POST);
-        if($post_result != 'Digite algo para postar.<br>')
-        {
-            $post_query = mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
+        
+        // Se o clique veio do botão de COMENTÁRIO
+        if (isset($_POST['action']) && $_POST['action'] == 'send-comment') {
+            $post_id_comentado = $_POST['post_id'];
+            $texto_comentario = $_POST['comment-text'];
+            
+
+            if (!empty($texto_comentario)) {
+
+            // Aqui você insere na sua tabela de comentários (exemplo):
+            mysqli_query($conexao, "INSERT INTO comentarios (postid, userid, comentario) VALUES ('$post_id_comentado', '$user_id', '$texto_comentario')");
+            
+            echo "<script>alert('$texto_comentario');</script>";
+
+            // REDIRECIONAR APÓS SUCESSO
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+
+            } else {
+                echo "<script>alert('Digite algo para comentar!');</script>";
+            }
+        }
+        
+        // Se o clique veio do formulário de NOVA POSTAGEM (new-post.html)
+        // Certifique-se que o botão lá tenha name="action" e value="make_post"
+        elseif (isset($_POST['action']) && $_POST['action'] == 'make_post') {
+            $post = new Post();
+            $post_result = $post->create_post($userid, $_POST);
+            if($post_result != 'Digite algo para postar.<br>') {
+                mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
+            }
+
+            // REDIRECIONAR APÓS SUCESSO
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
     }
 
@@ -113,7 +144,7 @@
                 <div class="timeline">
                     <div class="posts-amigos">
                         <?php
-                            foreach (array_reverse($post_data) as $linhapost) {
+                            foreach ($post_data as $linhapost) {
                                 $author_photo = !empty($linhapost['foto']) ? '../' . $linhapost['foto'] : '../assets/icons/default-avatar.png';
                                 $author_name = htmlspecialchars($linhapost['nome'] ?? 'Usuário');
                                 $post_text = htmlspecialchars($linhapost['post'] ?? '');
@@ -125,7 +156,6 @@
                                 echo '<p>' . $author_name . '</p>';
                                 echo '</div>';
 
-                                echo '<div class="text-content">' . $post_text . '</div>';
 
                                 if (!empty($post_image)) {
                                     echo '<div class="arquivos"><img height="300px" src="' . htmlspecialchars($post_image) . '" alt="erro na imagem"></img></div>';
@@ -133,6 +163,49 @@
                                     echo '<div class="arquivos"></div>';
                                 }
 
+                                echo '<div class="text-content">' . $post_text . '</div>';
+
+                                echo '<div class="comment-area">';
+                                    echo '<div class="my-comment">';
+                                        // Adicione a tag <form>
+                                        echo '<form method="POST" action="">'; 
+                                            echo '<textarea name="comment-text" class="comment-input"></textarea>';
+                                            
+                                            // Input escondido para o PHP saber qual post está sendo comentado
+                                            echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
+                                            
+                                            // O botão com type="submit" e o name "action"
+                                            echo '<button class="send-comment" type="submit" name="action" value="send-comment">Enviar</button>';
+                                        echo '</form>';
+                                    echo '</div>';
+                                    
+
+
+                                $stmt_c = $conexao->prepare("
+                                    SELECT c.comentario, u.nome, u.foto
+                                    FROM comentarios c
+                                    JOIN usuarios u ON c.userid = u.idusuarios
+                                    WHERE c.postid = ?
+                                    ORDER BY c.postid ASC
+                                ");
+                                $stmt_c->bind_param("i", $linhapost['postid']);
+                                $stmt_c->execute();
+                                $res_c = $stmt_c->get_result();
+
+                                while ($c = $res_c->fetch_assoc()){
+
+                                    echo '<div class="comment">';
+                                        echo '<img width="20" src="../' . $c['foto'] . '">';
+                                        echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                        echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                    echo '</div>';
+                                }
+
+                                $stmt_c->close();
+
+
+                                echo '</div>';
+                                                                
                                 echo '</div><hr>';
                             }
                         ?>
