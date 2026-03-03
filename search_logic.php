@@ -2,6 +2,10 @@
 
 include_once(__DIR__ . '/config.php');
 
+/* if (!isset($logado) || empty($logado)) {
+    die("Erro: Usuário nao está logado.");
+} */
+
 if ((!isset($_SESSION['email']) || !isset($_SESSION['senha']))) {
     header('Location: index.php');
     exit;
