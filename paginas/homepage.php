@@ -217,10 +217,12 @@
 
                         
                         removeImageButton.addEventListener('click', () => {
+                            unlink(blobUrl);
                             arquivo.value = '';
                             blobUrl = '';
                             imagePreview.src = '';
                             previewBox.style.display = 'none';
+                            
                         });
                         
                     }
