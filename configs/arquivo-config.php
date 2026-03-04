@@ -4,6 +4,11 @@
   //var_dump($_FILES);
   if (isset($_FILES['arquivo'])) {
     $arquivo = $_FILES['arquivo'];
+
+    if($arquivo['error'] === UPLOAD_ERR_NO_FILE) {
+      $path = '';
+    } else {
+
     if($arquivo['size'] > 2097152 * 25)
       die("Arquivo muito grande! Max: 2MB");
     if($arquivo['error'])
@@ -22,5 +27,6 @@
 /*     $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path);
     if ($deu_certo)
       echo "<p> Arquivo: <a href='arquivos/$novoNomeDoArquivo.$extensao'>clique aqui</a>"; */
+    }
   }
 ?>
