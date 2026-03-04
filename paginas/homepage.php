@@ -194,6 +194,9 @@
 
                     let imagePreview = document.getElementById('imagePreview');
                     let previewBox = document.getElementById('previewBox');
+
+                    let removeImageButton = document.querySelector('.removeImage-button');
+
                     let imagePath = "";
 
 
@@ -209,11 +212,17 @@
                                 //console.log(imagePath);  
                                 imagePreview.src = blobUrl;
                             }
-
-
-
-
+                        
                         });
+
+                        
+                        removeImageButton.addEventListener('click', () => {
+                            arquivo.value = '';
+                            blobUrl = '';
+                            imagePreview.src = '';
+                            previewBox.style.display = 'none';
+                        });
+                        
                     }
                 });
 

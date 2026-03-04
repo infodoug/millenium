@@ -106,6 +106,7 @@
       border-radius: 20px;
       grid-column: 1/4;
       justify-self: center;
+      position: relative;
     }
 
     #imagePreview {
@@ -113,6 +114,30 @@
       width: inherit;
       object-fit: cover;
       border-radius: 20px;
+    }
+
+    .removeImage-button {
+      height: 20px;
+      width: 20px;
+      background-color: gray;
+      border-radius: 50%;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        height: 10px;
+        width: 10px;
+      }
+
+      &:hover {
+        background-color: rgb(170, 170, 170);
+        cursor: pointer;
+      }
     }
 
 
