@@ -4,15 +4,26 @@
   <div class="newpostdiv">
     <div class="formContainer">
       <form enctype="multipart/form-data" method="POST">
-        <input class="input-text" name="post" type="text" />
+        <!-- <input class="input-text" name="post" type="text" /> -->
+
+        <!-- preview da imagem do post -->
+        <div id="previewBox">
+          <img id="imagePreview" src="#" alt="Preview da imagem">
+        </div>
+        <textarea class="input-text" rows="1"></textarea>
         <label for="arquivo">
           <img class="add-image" src="../assets/icons/addImg.png" alt="falha" />
           <p>Adicionar Imagem</p>
         </label>
         <input name="arquivo" type="file" id="arquivo" />
 
-        <button class="buttonLaunch" type="submit">Lançar</button>
+        <button class="buttonLaunch" type="submit">
+          <img src="../assets/icons/rocket.png" alt="">
+          Lançar
+        </button>
       </form>
     </div>
   </div>
+
+
 </body>

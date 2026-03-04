@@ -181,6 +181,42 @@
             document.body.appendChild(script);
             })
             .catch(error => console.error('Erro ao carregar header:', error));
+
+            // Carrega o new-post.html
+            fetch('../components/new-post/new-post.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('novo-post').innerHTML = data;
+
+                    // lógica de arquivo de imagem do new-post.html
+                    const arquivo = document.getElementById('arquivo');
+                    console.log("Arquivo carregado via fetch:", arquivo);
+
+                    let imagePreview = document.getElementById('imagePreview');
+                    let previewBox = document.getElementById('previewBox');
+                    let imagePath = "";
+
+
+                    
+                    if(arquivo) {
+                        arquivo.addEventListener('change', function () {
+                            if (this.files.length > 0) {
+                                previewBox.style.display = 'block';
+                                console.log("Arquivo selecionado!");
+                                // link temporário da imagem
+                                let blobUrl = URL.createObjectURL(this.files[0]);
+                                //imagePath = this.files[0].name;
+                                //console.log(imagePath);  
+                                imagePreview.src = blobUrl;
+                            }
+
+
+
+
+                        });
+                    }
+                });
+
         });
     </script>
 </body>
