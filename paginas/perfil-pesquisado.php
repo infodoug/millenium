@@ -18,17 +18,25 @@
     $result = $conexao->query($sql);
     ($user_data = mysqli_fetch_assoc($result));
 
+    // define o user_id usado nos INSERTs
+    $userid = $user_data['idusuarios'];
+    $user_id = (int) $userid;
+
     // dados do usuário pesquisado (aceita GET 'id' ou POST 'id-user-pesquisado')
     $num_id = null;
+
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $num_id = (int) $_GET['id'];
     } elseif (isset($_POST['id-user-pesquisado']) && is_numeric($_POST['id-user-pesquisado'])) {
         $num_id = (int) $_POST['id-user-pesquisado'];
     }
 
-    if (empty($num_id)) {
-        die('ID inválido.');
+    // Se ainda for nulo, algo deu errado na navegação
+    if (!$num_id) {
+        die('ID do usuário não especificado.');
     }
+
+
 
     // busca usuário pesquisado com prepared statement
     $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios = ?";
@@ -37,6 +45,11 @@
         $stmtp->execute();
         $resultado_pesquisado = $stmtp->get_result();
         $user_pesq_data = $resultado_pesquisado->fetch_assoc();
+
+        if (empty($num_id)) {
+            $num_id = $user_pesq_data['idusuarios'];
+        } 
+
         $stmtp->close();
     } else {
         die('Erro na consulta ao usuário.');
@@ -57,6 +70,32 @@
             $post_data[] = $row;
         }
         $stmtpost->close();
+    }
+
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        
+        // Se o clique veio do botão de COMENTÁRIO
+        if (isset($_POST['action']) && $_POST['action'] == 'send-comment') {
+            $post_id_comentado = $_POST['post_id'];
+            $texto_comentario = $_POST['comment-text'];
+            
+
+            if (!empty($texto_comentario)) {
+
+            // Aqui você insere na sua tabela de comentários (exemplo):
+            mysqli_query($conexao, "INSERT INTO comentarios (postid, userid, comentario) VALUES ('$post_id_comentado', '$user_id', '$texto_comentario')");
+            
+            echo "<script>alert('$texto_comentario');</script>";
+
+            // REDIRECIONAR APÓS SUCESSO
+            header("Location: perfil-pesquisado.php?id=" . $num_id);
+            exit();
+
+            } else {
+                echo "<script>alert('Digite algo para comentar!');</script>";
+            }
+        }
     }
 
 
@@ -124,18 +163,61 @@
                     <div class="posts-perfil">
                     <?php
                         foreach (array_reverse($post_data) as $linhapost) {
-                            echo
-                            '<div class="post">' .
-                            '<div class="post-header">' .
-                            '<img height="20" width="20" src=../' . $user_pesq_data['foto'] .' alt="erro na imagem"></img>' .
-                            '<p>' . $user_pesq_data['nome'] . '</p>' .
-                            '</div>' .
-                            '<div class="text-content">' .
-                            '<img height="300px" src=' . $linhapost['image'] . '>' .
-                            '<br>' .
+                            
+                            echo '<div class="post">';
+                            echo '<div class="post-header">';
+                            echo '<img height="20" width="20" src=../' . $user_pesq_data['foto'] .' alt="erro na imagem"></img>';
+                            echo '<p>' . $user_pesq_data['nome'] . '</p>';
+                            echo '</div>';
+                            echo '<div class="text-content">';
+                            echo '<img height="300px" src=' . $linhapost['image'] . '>';
+                            echo '<br>' .
                             $linhapost["post"] . 
                             '</div>' .
-                            '</div>' .
+                            '</div>';
+                            echo '<div class="comment-area">';
+                                echo '<div class="my-comment">';
+                                    // Adicione a tag <form>
+                                    echo '<form method="POST" action="">'; 
+                                        echo '<textarea name="comment-text" class="comment-input"></textarea>';
+                                        
+                                        // Input escondido para o PHP saber qual post está sendo comentado
+                                        echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
+                                        
+                                        // O botão com type="submit" e o name "action"
+                                        echo '<button class="send-comment" type="submit" name="action" value="send-comment">Enviar</button>';
+                                        
+                                        echo '<input type="hidden" name="id-user-pesquisado" value="' . $num_id . '">';
+
+                                    echo '</form>';
+                                echo '</div>';
+                                
+
+
+                            $stmt_c = $conexao->prepare("
+                                SELECT c.comentario, u.nome, u.foto
+                                FROM comentarios c
+                                JOIN usuarios u ON c.userid = u.idusuarios
+                                WHERE c.postid = ?
+                                ORDER BY c.postid ASC
+                            ");
+                            $stmt_c->bind_param("i", $linhapost['postid']);
+                            $stmt_c->execute();
+                            $res_c = $stmt_c->get_result();
+
+                            while ($c = $res_c->fetch_assoc()){
+
+                                echo '<div class="comment">';
+                                    echo '<img width="20" src="../' . $c['foto'] . '">';
+                                    echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                    echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                echo '</div>';
+                            }
+
+                            $stmt_c->close();
+
+
+                            echo '</div>';
                             '<hr>';                        
                         }
                     ?>
