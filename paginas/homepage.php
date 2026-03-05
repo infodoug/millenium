@@ -59,6 +59,12 @@
             // REDIRECIONAR APÓS SUCESSO
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
+/*         $post = new Post();
+        $post_result = $post->create_post($userid, $_POST);
+        if($post_result != 'Digite algo para postar.<br>')
+        {
+            $post_query = mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
+        } */
         }
     }
 
