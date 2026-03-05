@@ -18,7 +18,7 @@ searchInput.addEventListener('input', function () {
         );
         displaySuggestions(suggestions);
     } else {
-        suggestionsList.innerHTML = ''; // Limpa as sugestões se não houver entrada
+        suggestionsList.innerHTML = '';<!-- Limpa as sugestões se não houver entrada -->
     }
 });
 
