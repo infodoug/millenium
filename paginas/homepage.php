@@ -150,15 +150,10 @@
     <script>
         // Espera o DOM carregar completamente antes de executar o script
         document.addEventListener("DOMContentLoaded", function() {
-            // Carrega o header.html no container apropriado
-            fetch('../components/new-post/new-post.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('novo-post').innerHTML = data;
-            });
-        });
 
-        document.addEventListener("DOMContentLoaded", function() {
+
+
+
             // Carrega o header.html no container apropriado
             fetch('../components/header/header.html')
                 .then(response => response.text())
@@ -186,7 +181,10 @@
             fetch('../components/new-post/new-post.html')
                 .then(response => response.text())
                 .then(data => {
+
                     document.getElementById('novo-post').innerHTML = data;
+                    let newPostDiv = document.querySelector('.newpostdiv');
+                    newPostDiv.classList.add('active');
 
                     // lógica de arquivo de imagem do new-post.html
                     const arquivo = document.getElementById('arquivo');
@@ -217,7 +215,6 @@
 
                         
                         removeImageButton.addEventListener('click', () => {
-                            unlink(blobUrl);
                             arquivo.value = '';
                             blobUrl = '';
                             imagePreview.src = '';
@@ -227,8 +224,8 @@
                         
                     }
                 });
-
         });
+
     </script>
 </body>
 </html>

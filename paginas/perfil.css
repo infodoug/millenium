@@ -49,6 +49,11 @@
     height: 400px;
     background-color: #a622a6;
 
+    margin-bottom: 10px;
+
+    position: relative;
+    z-index: 1;
+
     .foto {
       border-radius: 200px;
       overflow: hidden;
@@ -56,7 +61,7 @@
       width: 170px;
       border: 20px solid #facffa;
       position: absolute;
-      left: 40px;
+      left: -40px;
       top: 25%;
       z-index: 6;
 
@@ -70,7 +75,9 @@
       height: 50%;
       border-radius: 0 300px 0 0;
       background-color: #fdfdfd;
-      display: flex;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      grid-template-columns: 1fr;
       justify-content: center;
       top: 50%;
       position: relative;
@@ -81,6 +88,31 @@
         text-align: center;
         color: #131313;
       }
+    }
+
+    #criarPost-button {
+      border: none;
+      background-color: #a622a6;
+      color: #fdfdfd;
+      grid-row: 3;
+      justify-self: end;
+      margin: 20px 60px;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+
+      img {
+        height: 12px;
+        margin-right: 5px;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: #b429b4;
+      }
+
     }
   }
 }

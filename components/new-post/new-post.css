@@ -1,15 +1,20 @@
+.newpostdiv.active {
+  visibility: visible;
+  margin-top: 0;
+}
 .newpostdiv {
+  margin-top: -120px;
+  visibility: hidden;
   height: fit-content;
   width: inherit;
   background-color: #fdfdfd;
   margin-bottom: 5px;
   border-radius: 20px;
   padding: 20px;
+  transition: visibility 400ms ease-in, margin-top 400ms ease-out;
 
   .formContainer {
     height: fit-content;
-
-
   }
 
   form {
