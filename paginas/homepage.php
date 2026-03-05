@@ -27,6 +27,8 @@
         $post_result = $post->create_post($userid, $_POST);
         if($post_result != 'Digite algo para postar.<br>')
         {
+/*             error_log(print_r([$post_result[0], $userid, $post_result[1], $path], true));
+            sleep(20); */
             $post_query = mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
         }
     }
