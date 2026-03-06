@@ -169,8 +169,12 @@
                             echo '<img height="20" width="20" src=../' . $user_pesq_data['foto'] .' alt="erro na imagem"></img>';
                             echo '<p>' . $user_pesq_data['nome'] . '</p>';
                             echo '</div>';
+                            if (!empty($linhapost['image'])) {
+                                echo '<div class="arquivos"><img height="300px" src="' . htmlspecialchars($linhapost['image']) . '" alt="erro na imagem"></img></div>';
+                            } else {
+                                echo '<div class="arquivos"></div>';
+                            }
                             echo '<div class="text-content">';
-                            echo '<img height="300px" src=' . $linhapost['image'] . '>';
                             echo '<br>' .
                             $linhapost["post"] . 
                             '</div>' .
@@ -178,7 +182,7 @@
                             echo '<div class="comment-area">';
                                 echo '<div class="my-comment">';
                                     // Adicione a tag <form>
-                                    echo '<form method="POST" action="">'; 
+                                    echo '<form method="POST" action="" class="comment-form">'; 
                                         echo '<textarea name="comment-text" class="comment-input"></textarea>';
                                         
                                         // Input escondido para o PHP saber qual post está sendo comentado

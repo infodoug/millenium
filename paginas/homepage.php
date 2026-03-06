@@ -171,10 +171,12 @@
 
                                 echo '<div class="text-content">' . $post_text . '</div>';
 
+                                echo '<hr>';
+
                                 echo '<div class="comment-area">';
                                     echo '<div class="my-comment">';
                                         // Adicione a tag <form>
-                                        echo '<form method="POST" action="">'; 
+                                        echo '<form method="POST" action="" class="comment-form">'; 
                                             echo '<textarea name="comment-text" class="comment-input"></textarea>';
                                             
                                             // Input escondido para o PHP saber qual post está sendo comentado
@@ -212,7 +214,7 @@
 
                                 echo '</div>';
                                                                 
-                                echo '</div><hr>';
+                                echo '</div>';
                             }
                         ?>
                     </div>

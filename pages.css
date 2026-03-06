@@ -3,13 +3,19 @@
   src: url("Dreadful-Regular.otf") format("opentype");
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap');
+
 * {
   padding: 0;
   margin: 0;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Exo','Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+textarea {
+  font-family: 'Exo','Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .container {
@@ -22,7 +28,7 @@ body {
   border-radius: 5px;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 5px;
+  gap: 20px;
 }
 
 .mini-perfil {
@@ -61,11 +67,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fdfdfd;
+/*   background-color: #fdfdfd; */
   min-height: 100vh;
   max-height: auto;
   width: inherit;
   border-radius: 20px 20px 20px 20px;
+  margin-top: 20px;
+  overflow: hidden;
 }
 
 .posts-amigos {
@@ -78,20 +86,66 @@ body {
   background-color: #fdfdfd;
 }
 
-.posts-perfil {
+.posts-perfil .post{
   width: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  padding-top: 20px;
+  background-color: #fdfdfd;
+
+}
+.posts-perfil .post .text-content {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+.posts-perfil .post .arquivos {
+  align-self: center;
+  overflow: hidden;
+  max-height: 400px;
+  height: fit-content;
+  width: inherit;
+  display: grid;
+  padding: 0 10px;
+}
+
+.posts-perfil .post .arquivos img{
+  object-fit: cover;
+  border-radius: 20px;
+  align-self: center;
+  justify-self: center;
 }
 
 .post {
   display: flex;
   flex-direction: column;
   width: auto;
-  padding: 20px;
-  text-align: center;
+  padding-top: 20px;
+  background-color: #fdfdfd;
 }
 
-.post.arquivos {
+.post .text-content {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+
+.post .arquivos {
   align-self: center;
+  overflow: hidden;
+  max-height: 400px;
+  height: fit-content;
+  width: inherit;
+  display: grid;
+  padding: 0 10px;
+}
+
+.post .arquivos img{
+  object-fit: cover;
+  border-radius: 20px;
+  align-self: center;
+  justify-self: center;
 }
 
 .post-header {
@@ -106,6 +160,10 @@ body {
   font-weight: bold;
   /*     color: #800080;
  */
+}
+
+.post-header img {
+  border-radius: 50%;
 }
 
 #suggestions {
@@ -127,24 +185,60 @@ body {
 }
 /* Personaliza a barra inteira */
 ::-webkit-scrollbar {
-  width: 5px; /* Largura da barra */
+  width: 2px; /* Largura da barra */
 }
 
 .comment-area {
   height: 200px;
   background-color: #ececec;
+  padding: 30px;
+  overflow-y: scroll;
+  margin-bottom: 20px;
 }
 
-.post .my-comment {
+.my-comment {
   display: grid;
-  grid-template-columns: auto 80% 2% max-content auto;
+  grid-template-columns: auto 80% auto;
+}
+
+.comment-form {
+  grid-column: 1/4;
+  justify-self: center;
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr;
+  width: 80%;
+}
+
+.comment-input {
+  border-radius: 15px;
+  resize: none;
+  overflow-y: scroll;
+  field-sizing: content;
+  max-height: 120px;
+  padding: 10px;
+
+  &:focus {
+    outline: none;
+    border-color: #a622a6;
+  }
+}
+
+.comment-form .send-comment {
+  justify-self: self-end;
+  grid-row: 2;
+  border: none;
+
 }
 
 .post textarea {
-  grid-column: 2/3;
+
 }
 
-.post .send-comment {
-  width: max-content;
-  grid-column: 4/5;
+.post hr {
+  margin-top: 10px;
+}
+
+.comment img {
+  border-radius: 50%;
 }
