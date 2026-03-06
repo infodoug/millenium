@@ -2,6 +2,8 @@
     session_start();
     include_once('../search_logic.php');
     include('../config.php');
+    include('../classes/post.php');
+    include('../configs/arquivo-config.php');
 
     // dados do usuário logado
     $logado = $_SESSION['email'];
@@ -38,6 +40,19 @@
             } else {
                 echo "<script>alert('Digite algo para comentar!');</script>";
             }
+        } 
+        // Se o clique veio do formulário de NOVA POSTAGEM (new-post.html)
+        // Certifique-se que o botão lá tenha name="action" e value="make_post"
+        elseif (isset($_POST['action']) && $_POST['action'] == 'make_post') {
+            $post = new Post();
+            $post_result = $post->create_post($userid, $_POST);
+            if($post_result != 'Digite algo para postar.<br>') {
+                mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
+            }
+
+            // REDIRECIONAR APÓS SUCESSO
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
     }
 ?>
@@ -80,14 +95,20 @@
                 <div class="timeline">
                     <div class="posts-perfil">
                         <?php
-                            foreach (array_reverse($post_data) as $linhapost) {
+                            foreach ($post_data as $linhapost) {
+                            $post_image = $linhapost['image'] ?? '';
+
                             echo '<div class="post">';
                             echo '<div class="post-header">';
                             echo '<img height="20" width="20" src=../' . $user_data['foto'] .' alt="erro na imagem"></img>';
                             echo '<p>' . $user_data['nome'] . '</p>';
                             echo '</div>';
+                            if (!empty($post_image)) {
+                                echo '<div class="arquivos"><img height="300px" src="' . htmlspecialchars($post_image) . '" alt="erro na imagem"></img></div>';
+                            } else {
+                                echo '<div class="arquivos"></div>';
+                            }
                             echo '<div class="text-content">';
-                            echo '<img src=' . $linhapost['image'] . '>';
                             echo '<br>' .
                             $linhapost["post"] . 
                             '</div>' .
@@ -102,7 +123,7 @@
                                         echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
                                         
                                         // O botão com type="submit" e o name "action"
-                                        echo '<button class="send-comment" type="submit" name="action" value="send-comment">Enviar</button>';
+                                        echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
                                         
                                         echo '<input type="hidden" name="id-user" value="' . $num_id . '">';
 
@@ -125,9 +146,12 @@
                             while ($c = $res_c->fetch_assoc()){
 
                                 echo '<div class="comment">';
+                                    echo '<div class="comment-header">';
                                     echo '<img width="20" src="../' . $c['foto'] . '">';
                                     echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                    echo '</div>';
                                     echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                    echo '<hr>';
                                 echo '</div>';
                             }
 
@@ -241,6 +265,21 @@
                             newPostDiv.classList.toggle('active');
                         });
                     }
+
+                    document.querySelector('form').addEventListener('submit', function(e) {
+                        const editorDiv = document.querySelector('[contenteditable="true"]');
+                        if (editorDiv.textContent.trim() === '') {
+                            e.preventDefault();
+                            alert('Digite algo para postar!');
+                            return;
+                        }
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'post';
+                        hiddenInput.value = editorDiv.textContent;
+                        this.appendChild(hiddenInput);
+                    });
+ 
 
                 });
         });

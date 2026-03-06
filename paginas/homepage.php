@@ -171,21 +171,22 @@
 
                                 echo '<div class="text-content">' . $post_text . '</div>';
 
-                                echo '<hr>';
+
 
                                 echo '<div class="comment-area">';
                                     echo '<div class="my-comment">';
                                         // Adicione a tag <form>
                                         echo '<form method="POST" action="" class="comment-form">'; 
-                                            echo '<textarea name="comment-text" class="comment-input"></textarea>';
+                                            echo '<textarea name="comment-text" class="comment-input" placeholder="Digite um comentário..."></textarea>';
                                             
                                             // Input escondido para o PHP saber qual post está sendo comentado
                                             echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
                                             
                                             // O botão com type="submit" e o name "action"
-                                            echo '<button class="send-comment" type="submit" name="action" value="send-comment">Enviar</button>';
+                                            echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
                                         echo '</form>';
                                     echo '</div>';
+                                    
                                     
 
 
@@ -203,10 +204,15 @@
                                 while ($c = $res_c->fetch_assoc()){
 
                                     echo '<div class="comment">';
+                                        echo '<div class="comment-header">';
                                         echo '<img width="20" src="../' . $c['foto'] . '">';
                                         echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                        echo '</div>';
                                         echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                        echo '<hr>';
                                     echo '</div>';
+
+                                    
                                 }
 
                                 $stmt_c->close();
@@ -215,6 +221,7 @@
                                 echo '</div>';
                                                                 
                                 echo '</div>';
+                                echo '<hr class="post-separator">';
                             }
                         ?>
                     </div>
@@ -231,6 +238,7 @@
     <script>
         // Espera o DOM carregar completamente antes de executar o script
         document.addEventListener("DOMContentLoaded", function() {
+            
 
 
 
@@ -304,6 +312,20 @@
                         });
                         
                     }
+
+                    document.querySelector('form').addEventListener('submit', function(e) {
+                        const editorDiv = document.querySelector('[contenteditable="true"]');
+                        if (editorDiv.textContent.trim() === '') {
+                            e.preventDefault();
+                            alert('Digite algo para postar!');
+                            return;
+                        }
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'post';
+                        hiddenInput.value = editorDiv.textContent;
+                        this.appendChild(hiddenInput);
+                    });
                 });
         });
 

@@ -39,7 +39,7 @@ textarea {
   background-color: #fdfdfd;
   height: 500px;
   width: 200px;
-  border-radius: 20px 20px 20px 20px;
+  border-radius: 5px 5px 5px 5px;
 }
 
 .mini-perfil .foto {
@@ -67,11 +67,11 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-/*   background-color: #fdfdfd; */
+  background-color: #fdfdfd;
   min-height: 100vh;
   max-height: auto;
   width: inherit;
-  border-radius: 20px 20px 20px 20px;
+  border-radius: 5px 5px 5px 5px;
   margin-top: 20px;
   overflow: hidden;
 }
@@ -86,21 +86,11 @@ textarea {
   background-color: #fdfdfd;
 }
 
-.posts-perfil .post{
-  width: 100vh;
-  display: flex;
-  flex-direction: column;
-  width: auto;
-  padding-top: 20px;
-  background-color: #fdfdfd;
+.posts-perfil {
+  width: 100%;
+}
 
-}
-.posts-perfil .post .text-content {
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-bottom: 20px;
-}
-.posts-perfil .post .arquivos {
+/* .posts-perfil .post .arquivos {
   align-self: center;
   overflow: hidden;
   max-height: 400px;
@@ -108,14 +98,14 @@ textarea {
   width: inherit;
   display: grid;
   padding: 0 10px;
-}
+} */
 
-.posts-perfil .post .arquivos img{
+/* .posts-perfil .post .arquivos img{
   object-fit: cover;
   border-radius: 20px;
   align-self: center;
   justify-self: center;
-}
+} */
 
 .post {
   display: flex;
@@ -127,7 +117,7 @@ textarea {
 
 .post .text-content {
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 30px;
   margin-bottom: 20px;
 }
 
@@ -153,6 +143,7 @@ textarea {
   flex-direction: row;
   align-items: center;
   padding: 5px;
+  margin-left: 15px;
 }
 
 .post-header p {
@@ -193,6 +184,10 @@ textarea {
   background-color: #ececec;
   padding: 30px;
   overflow-y: scroll;
+  box-shadow: inset 0 -20px 30px -30px black;
+}
+
+.post-separator {
   margin-bottom: 20px;
 }
 
@@ -211,7 +206,7 @@ textarea {
 }
 
 .comment-input {
-  border-radius: 15px;
+  border-radius: 5px;
   resize: none;
   overflow-y: scroll;
   field-sizing: content;
@@ -228,7 +223,22 @@ textarea {
   justify-self: self-end;
   grid-row: 2;
   border: none;
+  height: fit-content;
+  width: fit-content;
+  padding: 3px 7px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 5px;
+  background-color: #a622a6;
+  color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  cursor: pointer;
+}
 
+.comment-form .send-comment:hover {
+  background-color: #b424b4;
 }
 
 .post textarea {
@@ -241,4 +251,18 @@ textarea {
 
 .comment img {
   border-radius: 50%;
+  margin-right: 5px;
+}
+
+.comment hr{
+  margin-bottom: 10px;
+}
+
+.comment p {
+  padding: 5px 20px;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
 }
