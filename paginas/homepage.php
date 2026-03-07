@@ -22,6 +22,11 @@
     // postagem
     $userid = $user_data['idusuarios'];
     $user_id = (int) $userid;
+    
+    // Armazenar user_id na sessão se não estiver lá
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['user_id'] = $user_id;
+    }
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         
@@ -53,7 +58,7 @@
             $post = new Post();
             $post_result = $post->create_post($userid, $_POST);
             if($post_result != 'Digite algo para postar.<br>') {
-                mysqli_query($conexao, "INSERT INTO posts(postid,userid,post,image) VALUES ('$post_result[0]','$userid','$post_result[1]','$path')");
+                mysqli_query($conexao, "INSERT INTO posts(userid,post,image,created_at) VALUES ('$userid','$post_result[1]','$path',CURRENT_TIMESTAMP)");
             }
 
             // REDIRECIONAR APÓS SUCESSO
@@ -126,7 +131,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../pages.css">
-    
+    <link rel="stylesheet" href="../components/header/header.css">
+    <link rel="stylesheet" href="../components/post-menu/post-menu.css">
+    <link rel="stylesheet" href="../components/comment-menu/comment-menu.css">
     <title>Millenium - Início</title>
 </head>
 <body>
@@ -155,11 +162,32 @@
                                 $author_name = htmlspecialchars($linhapost['nome'] ?? 'Usuário');
                                 $post_text = htmlspecialchars($linhapost['post'] ?? '');
                                 $post_image = $linhapost['image'] ?? '';
+                                $post_created_at = $linhapost['created_at'] ?? date('Y-m-d H:i:s');
 
-                                echo '<div class="post">';
+                                echo '<div class="post" data-created-at="' . htmlspecialchars($post_created_at) . '">';
                                 echo '<div class="post-header">';
                                 echo '<img height="20" width="20" src="' . htmlspecialchars($author_photo) . '" alt="erro na imagem"></img>';
                                 echo '<p>' . $author_name . '</p>';
+                                
+                                // Mostrar menu apenas para posts do usuário logado
+                                if ((int)$linhapost['userid'] === $user_id) {
+                                    echo '<div class="post-actions">';
+                                    echo '<div class="post-menu-container">';
+                                    echo '<button class="post-menu-btn" title="Opções do post">';
+                                    echo '<img src="../assets/icons/arrow-down.png" alt="Menu">';
+                                    echo '</button>';
+                                    echo '<div class="post-menu">';
+                                    echo '<button class="post-menu-item edit" data-post-id="' . htmlspecialchars($linhapost['postid']) . '">';
+                                    echo '<span>✏️ Editar</span>';
+                                    echo '</button>';
+                                    echo '<button class="post-menu-item delete" data-post-id="' . htmlspecialchars($linhapost['postid']) . '">';
+                                    echo '<span>🗑️ Deletar</span>';
+                                    echo '</button>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
+                                
                                 echo '</div>';
 
 
@@ -191,11 +219,11 @@
 
 
                                 $stmt_c = $conexao->prepare("
-                                    SELECT c.comentario, u.nome, u.foto
+                                    SELECT c.idcomentarios, c.comentario, c.userid, u.nome, u.foto
                                     FROM comentarios c
                                     JOIN usuarios u ON c.userid = u.idusuarios
                                     WHERE c.postid = ?
-                                    ORDER BY c.postid ASC
+                                    ORDER BY c.idcomentarios ASC
                                 ");
                                 $stmt_c->bind_param("i", $linhapost['postid']);
                                 $stmt_c->execute();
@@ -207,8 +235,29 @@
                                         echo '<div class="comment-header">';
                                         echo '<img width="20" src="../' . $c['foto'] . '">';
                                         echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                        
+                                        // Mostrar menu apenas para comentários do usuário logado
+                                        if ((int)$c['userid'] === $user_id) {
+                                            echo '<div class="comment-menu-container">';
+                                            echo '<button class="comment-menu-btn" title="Opções do comentário">';
+                                            echo '<img src="../assets/icons/arrow-down.png" alt="Menu">';
+                                            echo '</button>';
+                                            echo '<div class="comment-menu">';
+                                            echo '<button class="comment-menu-item delete" data-comment-id="' . htmlspecialchars($c['idcomentarios']) . '">';
+                                            echo '<span>🗑️ Deletar</span>';
+                                            echo '</button>';
+                                            echo '</div>';
+                                            echo '</div>';
+                                        }
+                                        
                                         echo '</div>';
-                                        echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                        
+                                        // Exibir comentário - não escapar se for um comentário excluído
+                                        if (strpos($c['comentario'], '[comentário excluído]') !== false) {
+                                            echo '<p>' . $c['comentario'] . '</p>';
+                                        } else {
+                                            echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                        }
                                         echo '<hr>';
                                     echo '</div>';
 
@@ -263,6 +312,18 @@
             script.src = "../scripts/user-suggestions.php";
             script.defer = true;
             document.body.appendChild(script);
+
+            // Inclui o script do menu de posts
+            const scriptMenu = document.createElement("script");
+            scriptMenu.src = "../components/post-menu/post-menu.js";
+            scriptMenu.defer = true;
+            document.body.appendChild(scriptMenu);
+
+            // Inclui o script do menu de comentários
+            const scriptCommentMenu = document.createElement("script");
+            scriptCommentMenu.src = "../components/comment-menu/comment-menu.js";
+            scriptCommentMenu.defer = true;
+            document.body.appendChild(scriptCommentMenu);
             })
             .catch(error => console.error('Erro ao carregar header:', error));
 

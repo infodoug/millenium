@@ -18,6 +18,14 @@
     if($extensao != 'jpg' && $extensao != 'png')
       die('Tipo de arquivo inválido!');
 
+    // Validar proporção 1:1 (quadrada)
+    $img_info = getimagesize($arquivo['tmp_name']);
+    $largura = $img_info[0];
+    $altura = $img_info[1];
+    
+    if ($largura != $altura)
+      die('A imagem deve ter proporção 1:1 (quadrada)!');
+
     $path = $pasta . $novoNomeDoArquivo . '.' . $extensao;
     $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path);
     if ($deu_certo)
