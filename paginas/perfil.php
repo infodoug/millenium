@@ -90,15 +90,17 @@
         // Se o clique veio do formulário de NOVA POSTAGEM (new-post.html)
         // Certifique-se que o botão lá tenha name="action" e value="make_post"
         elseif (isset($_POST['action']) && $_POST['action'] == 'make_post') {
-            $post = new Post();
-            $post_result = $post->create_post($userid, $_POST);
-            if($post_result != 'Digite algo para postar.<br>') {
-                mysqli_query($conexao, "INSERT INTO posts(userid,post,image,created_at) VALUES ('$userid','$post_result[1]','$path',CURRENT_TIMESTAMP)");
-            }
+                    $post = new Post();
+                    // Corrigido de $userid para $user_id
+                    $post_result = $post->create_post($user_id, $_POST);
+                    if($post_result != 'Digite algo para postar.<br>') {
+                        // Corrigido de $userid para $user_id
+                        mysqli_query($conexao, "INSERT INTO posts(userid,post,image,created_at) VALUES ('$user_id','$post_result[1]','$path',CURRENT_TIMESTAMP)");
+                    }
 
-            // REDIRECIONAR APÓS SUCESSO
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
+                    // REDIRECIONAR APÓS SUCESSO
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
         }
     }
 ?>
@@ -155,7 +157,7 @@
                 <div class="timeline">
                     <div class="posts-perfil">
                         <?php
-                            foreach ($post_data as $linhapost) {
+                            foreach (array_reverse($post_data) as $linhapost) {
                             $post_image = $linhapost['image'] ?? '';
                             $post_created_at = $linhapost['created_at'] ?? date('Y-m-d H:i:s');
 
@@ -396,7 +398,8 @@
                         });
                     }
 
-                    document.querySelector('form').addEventListener('submit', function(e) {
+                    // Adiciona a escuta de submit apenas no formulário de novo post
+                    document.querySelector('#novo-post form').addEventListener('submit', function(e) {
                         const editorDiv = document.querySelector('[contenteditable="true"]');
                         if (editorDiv.textContent.trim() === '') {
                             e.preventDefault();

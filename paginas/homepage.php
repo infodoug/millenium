@@ -24,9 +24,8 @@
     $user_id = (int) $userid;
     
     // Armazenar user_id na sessão se não estiver lá
-    if (!isset($_SESSION['user_id'])) {
-        $_SESSION['user_id'] = $user_id;
-    }
+    $_SESSION['user_id'] = $user_id;
+
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         
@@ -107,13 +106,29 @@
         $friend_ids[] = $fid;
     }
 
-    if (!empty($friend_ids)) {
-        // montar lista segura de inteiros
-        $friend_ids = array_map('intval', $friend_ids);
-        $ids_list = implode(',', $friend_ids);
+    // posts dos amigos e do próprio usuário
+    $post_data = array();
+    // Iniciar a lista de IDs já incluindo o usuário logado
+    $all_relevant_ids = array($user_id); 
 
-        // buscar posts com dados do autor, ordenados por postid desc (mais novo primeiro)
-        $sql_posts = "SELECT p.*, u.nome, u.foto FROM posts p JOIN usuarios u ON p.userid = u.idusuarios WHERE p.userid IN (" . $ids_list . ") ORDER BY p.postid DESC";
+    foreach ($friends as $f) {
+        $fid = ($f['id_solicitante'] == $user_id) ? (int)$f['id_solicitado'] : (int)$f['id_solicitante'];
+        $all_relevant_ids[] = $fid;
+    }
+
+    if (!empty($all_relevant_ids)) {
+        // montar lista segura de inteiros
+        $all_relevant_ids = array_map('intval', $all_relevant_ids);
+        $ids_list = implode(',', $all_relevant_ids);
+
+        // buscar posts com dados do autor, ordenados por postid DESC (mais novo primeiro)
+        // Usamos p.created_at ou p.postid para garantir a ordem cronológica
+        $sql_posts = "SELECT p.*, u.nome, u.foto 
+                    FROM posts p 
+                    JOIN usuarios u ON p.userid = u.idusuarios 
+                    WHERE p.userid IN (" . $ids_list . ") 
+                    ORDER BY p.created_at DESC"; // Alterado para ordenar pela data de criação
+        
         if ($res_posts = $conexao->query($sql_posts)) {
             while ($row = $res_posts->fetch_assoc()) {
                 $post_data[] = $row;
@@ -148,6 +163,7 @@
                 <div class="nome">
                     <?php
                         echo $user_data['nome'];
+                        echo $user_id;
                     ?>
                 </div>
             </div>
@@ -160,7 +176,7 @@
                             foreach ($post_data as $linhapost) {
                                 $author_photo = !empty($linhapost['foto']) ? '../' . $linhapost['foto'] : '../assets/icons/default-avatar.png';
                                 $author_name = htmlspecialchars($linhapost['nome'] ?? 'Usuário');
-                                $post_text = htmlspecialchars($linhapost['post'] ?? '');
+                                $post_text = $linhapost['post'] ?? '';
                                 $post_image = $linhapost['image'] ?? '';
                                 $post_created_at = $linhapost['created_at'] ?? date('Y-m-d H:i:s');
 
@@ -170,7 +186,7 @@
                                 echo '<p>' . $author_name . '</p>';
                                 
                                 // Mostrar menu apenas para posts do usuário logado
-                                if ((int)$linhapost['userid'] === $user_id) {
+                                if ((int)$linhapost['userid'] == (int)$user_id) {
                                     echo '<div class="post-actions">';
                                     echo '<div class="post-menu-container">';
                                     echo '<button class="post-menu-btn" title="Opções do post">';
