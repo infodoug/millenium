@@ -23,12 +23,16 @@
     $user_id = (int) $userid;
 
     // dados do usuário pesquisado (aceita GET 'id' ou POST 'id-user-pesquisado')
+
     $num_id = null;
 
     if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $num_id = (int) $_GET['id'];
     } elseif (isset($_POST['id-user-pesquisado']) && is_numeric($_POST['id-user-pesquisado'])) {
         $num_id = (int) $_POST['id-user-pesquisado'];
+    } elseif (isset($_POST['perfil_id']) && is_numeric($_POST['perfil_id'])) { 
+        // Adicione esta condição para capturar o ID vindo do mural
+        $num_id = (int) $_POST['perfil_id'];
     }
 
     // Se ainda for nulo, algo deu errado na navegação
@@ -94,6 +98,21 @@
 
             } else {
                 echo "<script>alert('Digite algo para comentar!');</script>";
+            }
+        }
+
+        // Lógica para postar no Mural
+        if (isset($_POST['action']) && $_POST['action'] == 'post-mural') {
+            $mensagem_mural = mysqli_real_escape_string($conexao, $_POST['mural-text']);
+            $perfil_destino = (int)$_POST['perfil_id'];
+
+            if (!empty($mensagem_mural)) {
+                $sql_mural = "INSERT INTO mural (autor_id, perfil_id, mensagem) VALUES ('$user_id', '$perfil_destino', '$mensagem_mural')";
+                mysqli_query($conexao, $sql_mural);
+                
+                // Redireciona garantindo que o ?id= apareça na URL
+                header("Location: perfil-pesquisado.php?id=" . $perfil_destino);
+                exit();
             }
         }
     }
@@ -237,6 +256,49 @@
                     ?>
                 </div>
             </div>
+            <section class="mural-container">
+                <h3>Mural de Recados</h3>
+                
+                <div class="mural-form">
+                    <form method="POST">
+                        <textarea name="mural-text" placeholder="Escreva algo no mural..." required></textarea>
+                        <input type="hidden" name="perfil_id" value="<?php echo $num_id; ?>">
+                        <button type="submit" name="action" value="post-mural">Postar no Mural</button>
+                    </form>
+                </div>
+
+                <div class="mural-list">
+                    <?php
+                        // Busca as mensagens do mural deste perfil específico
+                        $query_mural = "SELECT m.*, u.nome, u.foto 
+                                        FROM mural m 
+                                        JOIN usuarios u ON m.autor_id = u.idusuarios 
+                                        WHERE m.perfil_id = ? 
+                                        ORDER BY m.data_postagem DESC";
+                        
+                        $stmt_m = $conexao->prepare($query_mural);
+                        $stmt_m->bind_param("i", $num_id);
+                        $stmt_m->execute();
+                        $res_mural = $stmt_m->get_result();
+
+                        if ($res_mural->num_rows > 0) {
+                            while ($recado = $res_mural->fetch_assoc()) {
+                                echo '<div class="mural-item">';
+                                    echo '<div class="mural-item-header">';
+                                        echo '<img src="../' . $recado['foto'] . '" width="30" height="30">';
+                                        echo '<strong>' . htmlspecialchars($recado['nome']) . '</strong>';
+                                        echo '<span class="mural-date">' . date('d/m/H:i', strtotime($recado['data_postagem'])) . '</span>';
+                                    echo '</div>';
+                                    echo '<p>' . nl2br(htmlspecialchars($recado['mensagem'])) . '</p>';
+                                echo '</div>';
+                            }
+                        } else {
+                            echo '<p class="empty-mural">Nenhum recado ainda. Seja o primeiro!</p>';
+                        }
+                        $stmt_m->close();
+                    ?>
+                </div>
+            </section>
         </div>
     </main>
     <script>
