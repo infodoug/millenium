@@ -167,7 +167,7 @@
                             echo '<p>' . $user_data['nome'] . '</p>';
                             
                             // Mostrar menu apenas para posts do usuário logado
-                            if ((int)$linhapost['userid'] === $user_id) {
+                            if ((int)$linhapost['userid'] === $user_id && ($linhapost['is_deleted'] == 0)) {
                                 echo '<div class="post-actions">';
                                 echo '<div class="post-menu-container">';
                                 echo '<button class="post-menu-btn" title="Opções do post">';
