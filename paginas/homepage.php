@@ -144,7 +144,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.1">
     <link rel="stylesheet" href="../pages.css">
     <link rel="stylesheet" href="../components/header/header.css">
     <link rel="stylesheet" href="../components/post-menu/post-menu.css">
@@ -156,15 +156,25 @@
     <main>
         <div class="container">
             <div class="mini-perfil">
-                <div class="foto">
-                    <img height="125" width="125" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
-                    
-                </div>
-                <div class="nome">
-                    <?php
-                        echo $user_data['nome'];
-                        echo $user_id;
-                    ?>
+                <svg class="card-shape" viewBox="0 0 100 120" preserveAspectRatio="none">
+                    <path d="M 0,10 
+                            Q 50,-5 100,10 
+                            L 100,110 
+                            Q 50,125 0,110 
+                            Z" 
+                        fill="white" />
+                </svg>
+                <div class="miniperfilcontent">
+                    <div class="foto">
+                        <img height="125" width="125" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
+                        
+                    </div>
+                    <div class="nome">
+                        <?php
+                            echo $user_data['nome'];
+                            /* echo $user_id; */
+                        ?>
+                    </div>
                 </div>
             </div>
 

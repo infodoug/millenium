@@ -59,6 +59,7 @@
 <meta charset="UTF-8">
   <title>Millenium - Criar Conta</title>
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="criar-conta.css">
   <link href="script.js">
 </head>
 <body>

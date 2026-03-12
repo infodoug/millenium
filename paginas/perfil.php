@@ -125,7 +125,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.1">
     <link rel="stylesheet" href="../pages.css">
     <link rel="stylesheet" href="perfil.css">
     <link rel="stylesheet" href="../components/header/header.css">
@@ -324,7 +324,7 @@
                                     echo '<div class="mural-item-header">';
                                         echo '<img src="../' . $recado['foto'] . '" width="30" height="30">';
                                         echo '<strong>' . htmlspecialchars($recado['nome']) . '</strong>';
-                                        echo '<span class="mural-date">' . date('d/m/H:i', strtotime($recado['data_postagem'])) . '</span>';
+                                        /* echo '<span class="mural-date">' . date('d/m/H:i', strtotime($recado['data_postagem'])) . '</span>'; */
                                     echo '</div>';
                                     echo '<p>' . nl2br(htmlspecialchars($recado['mensagem'])) . '</p>';
                                 echo '</div>';

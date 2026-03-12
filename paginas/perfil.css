@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .container-perfil {
   padding-left: 97px;
   padding-right: 97px;
@@ -5,11 +11,13 @@
   margin-top: 1px;
   background-color: #facffa;
   height: auto;
+  width: 100%;
   border-radius: 5px;
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto auto;
   gap: 20px;
+  box-sizing: border-box;
 
   .center-perfil{
     grid-row: 1 / span 3;
@@ -150,5 +158,8 @@
 
   .mural-container {
     grid-column: 2;
+    background-color: #fdfdfd;
+    box-sizing: border-box;
+    padding: 5px;
   }
 }
