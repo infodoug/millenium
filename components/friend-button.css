@@ -7,6 +7,9 @@
   padding: 7px;
   border-radius: 50px;
   border: none;
+  align-self: flex-end;
+  justify-self: end;
+  margin: 20px 60px;
 }
 
 .friend-button:hover {
@@ -22,6 +25,11 @@
 
 .decide-friendship {
   display: flex;
+  height: fit-content;
+  width: fit-content;
+  align-self: flex-end;
+  justify-self: end;
+  margin: 20px 60px;
 }
 
 .friend-button.accept {

@@ -298,9 +298,9 @@
                 
                 <div class="mural-form">
                     <form method="POST">
-                        <textarea name="mural-text" placeholder="Escreva algo no mural..." required></textarea>
+                        <textarea class="mural-textarea" name="mural-text" placeholder="Escreva algo no mural..." required></textarea>
                         <input type="hidden" name="perfil_id" value="<?php echo $num_id; ?>">
-                        <button type="submit" name="action" value="post-mural">Postar no Mural</button>
+                        <button type="submit" name="action" value="post-mural">Fixar no Mural</button>
                     </form>
                 </div>
 
