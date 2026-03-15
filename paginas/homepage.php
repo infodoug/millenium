@@ -149,6 +149,7 @@
     <link rel="stylesheet" href="../components/header/header.css">
     <link rel="stylesheet" href="../components/post-menu/post-menu.css">
     <link rel="stylesheet" href="../components/comment-menu/comment-menu.css">
+    <link rel="stylesheet" href="../components/new-post/emoji-tab.css" />
     <title>Millenium - Início</title>
 </head>
 <body>
@@ -400,20 +401,79 @@
                         
                     }
 
+
                     document.querySelector('form').addEventListener('submit', function(e) {
                         const editorDiv = document.querySelector('[contenteditable="true"]');
-                        if (editorDiv.textContent.trim() === '') {
+                        
+                        // Agora validamos usando innerHTML para considerar imagens também
+                        if (editorDiv.innerHTML.trim() === '') {
                             e.preventDefault();
                             alert('Digite algo para postar!');
                             return;
                         }
+                        
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
                         hiddenInput.name = 'post';
-                        hiddenInput.value = editorDiv.textContent;
+                        
+                        // innerHTML vai capturar as tags <img> dos emojis
+                        hiddenInput.value = editorDiv.innerHTML; 
                         this.appendChild(hiddenInput);
                     });
+
+                    const emojiBtn = document.querySelector('.emojiButton');
+                    const emojiContainer = document.getElementById('emoji-picker-container');
+
+                    emojiBtn.addEventListener('click', function(e) {
+                        e.preventDefault(); // Evita qualquer comportamento estranho no form
+
+                        // Se o container estiver vazio, carrega o conteúdo via Fetch
+                        if (emojiContainer.innerHTML === "") {
+                            fetch('../components/new-post/emoji-tab.html') // Ajuste o caminho se necessário
+                                .then(res => res.text())
+                                .then(html => {
+                                    // Remove a tag <link> ou tags <body> extras se houver
+                                    emojiContainer.innerHTML = html;
+                                    
+                                    // Adicionar o emoji ao clicar nele
+                                    emojiContainer.addEventListener('click', (event) => {
+                                        if(event.target.tagName === 'IMG') {
+                                            const editor = document.querySelector('.input-text');
+                                            
+                                            // Garante que o editor está focado para inserir no lugar certo
+                                            editor.focus(); 
+                                            
+                                            // Pega o caminho da imagem que foi clicada na aba de emojis
+                                            const imgSrc = event.target.src;
+                                            const imgAlt = event.target.alt;
+                                            
+                                            // Monta a tag HTML da imagem (com um tamanho reduzido para parecer texto)
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style=" vertical-align: middle; margin: 0 2px;">`;
+                                            
+                                            // Insere a tag HTML da imagem onde o cursor do usuário está
+                                            document.execCommand('insertHTML', false, imgTag);
+                                        }
+                                    });
+                                });
+                        }
+
+                        // Toggle de visibilidade
+                        if (emojiContainer.style.display === 'none') {
+                            emojiContainer.style.display = 'block';
+                        } else {
+                            emojiContainer.style.display = 'none';
+                        }
+                    });
+
+                    // Fechar ao clicar fora
+                    document.addEventListener('click', function(event) {
+                        if (!emojiBtn.contains(event.target) && !emojiContainer.contains(event.target)) {
+                            emojiContainer.style.display = 'none';
+                        }
+                    });
                 });
+
+
         });
 
     </script>

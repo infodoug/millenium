@@ -147,7 +147,7 @@
                         // Mostrar botão de editar foto apenas para o próprio perfil
                         if ($user_id === $num_id) {
                             echo '<button id="edit-foto-button" class="edit-foto-btn" title="Trocar foto de perfil">
-                                <img src="../assets/icons/emoticons/camera.png" alt="Trocar foto de perfil">
+                                <img src="../assets/icons/emoticons/smiling.png" alt="Trocar foto de perfil">
                             </button>';
                             echo '<form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">';
                             echo '<input type="file" name="foto-perfil" id="foto-perfil-input" accept="image/jpeg,image/png" required>';

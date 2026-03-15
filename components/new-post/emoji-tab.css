@@ -1,0 +1,14 @@
+.emoji-tab {
+    background-color: #d8d8d8; /* Corrigido de azul para branco para visualização */
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: auto; /* Aumentei um pouco */
+    width: 220px;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-rows: auto auto;
+    position: absolute;
+    top: 70px;
+}

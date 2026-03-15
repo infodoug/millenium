@@ -25,13 +25,14 @@ header .mil {
 }
 
 .search-bar input {
-  border-radius: 20px;
+  border-radius: 5px;
   height: 40px;
   border: none;
   width: 450px;
   background: url("../../assets/icons/ic--round-search.png") no-repeat right
     10px center;
   background-size: 20px 20px;
+  padding: 0 20px;
 
   &:focus {
     outline: none;

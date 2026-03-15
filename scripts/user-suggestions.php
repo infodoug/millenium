@@ -34,7 +34,9 @@ function displaySuggestions(suggestions) {
                                 ${user.nome}
 
                         </button>
-                    </form>`
+                    </form>
+                    <hr>
+                    `
             /* return `<a href='/millenium/paginas/perfil-pesquisado.php?id=${user.idusuarios}'>
 
             </a>`; */
