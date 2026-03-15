@@ -533,7 +533,7 @@
                                         const imgSrc = event.target.src;
                                         const imgAlt = event.target.alt;
                                         // Tag da imagem com largura fixa para não ficar gigante no comentário
-                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px; width: 18px; height: 18px;">`;
+                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
                                         
                                         document.execCommand('insertHTML', false, imgTag);
                                     }

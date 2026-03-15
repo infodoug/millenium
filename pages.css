@@ -320,7 +320,7 @@ textarea {
   margin-top: 10px;
 }
 
-.comment img {
+.comment .post-header img {
   border-radius: 50%;
   margin-right: 5px;
 }
