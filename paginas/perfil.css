@@ -4,17 +4,22 @@
   box-sizing: border-box;
 }
 
+body {
+
+}
+
 .container-perfil {
   padding-left: 97px;
   padding-right: 97px;
   padding-top: 60px;
-  margin-top: 1px;
+  margin: 1px auto 0 auto;
+  padding-bottom: 15px;
   background-color: #facffa;
   height: auto;
   width: 100%;
   border-radius: 5px;
   display: grid;
-  grid-template-columns: auto 320px;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto auto auto;
   gap: 20px;
   box-sizing: border-box;
@@ -23,12 +28,17 @@
     grid-row: 1 / span 3;
   }
 
+  #novo-post {
+    width: 850px;
+  }
+
 
   .side-perfil {
     background-color: #fdfdfd;
-    border-radius: 20px;
+    border-radius: 5px;
     height: 400px;
     width: 320px;
+    justify-self: start;
   }
 
   .timeline {
@@ -39,7 +49,7 @@
     min-height: 100vh;
     max-height: auto;
     width: 850px;
-    border-radius: 0px 0px 20px 20px;
+    border-radius: 0px 0px 5px 5px;
     margin-top: 10px;
 
     .posts-perfil {
@@ -53,7 +63,7 @@
   }
 
   .header-perfil {
-    border-radius: 20px 20px 0px 0px;
+    border-radius: 5px 5px 0px 0px;
 
     width: 850px;
     height: 400px;
@@ -112,13 +122,13 @@
     }
 
     .infos {
-      width: 100%;
+      width: 850px;
       height: 50%;
       border-radius: 0 300px 0 0;
       background-color: #fdfdfd;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      grid-template-columns: 1fr;
+      grid-template-columns: 850px;
       justify-content: center;
       top: 50%;
       position: relative;
@@ -168,6 +178,7 @@
     flex-direction: column;
     align-items: center;
     border: 5px solid #b429b4ad;
+    width: 320px;
   }
   .mural-form {
     width: 100%;

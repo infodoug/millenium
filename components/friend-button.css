@@ -58,11 +58,15 @@
 .unfriendArea {
   display: none;
   position: relative;
+  grid-row: 3;
+  justify-self: end;
+  height: fit-content;
+  width: fit-content;
 }
 
 .friend-button.isFriend {
   background-color: #dadada;
-  position: absolute;
+
   width: max-content;
   /* z-index: 1; */
 }
@@ -73,6 +77,5 @@
 .friend-button.unfriend {
   background-color: #f54a42;
   color: #f5f5f5;
-  position: absolute;
   width: max-content;
 }
