@@ -131,6 +131,7 @@
     <link rel="stylesheet" href="../components/header/header.css">
     <link rel="stylesheet" href="../components/post-menu/post-menu.css">
     <link rel="stylesheet" href="../components/comment-menu/comment-menu.css">
+    <link rel="stylesheet" href="../components/new-post/emoji-tab.css" />
     <title>Millenium - <?php echo $user_data['nome'] ?></title>
 </head>
 <body>
@@ -213,18 +214,20 @@
                             '</div>';
                             echo '<div class="comment-area">';
                                 echo '<div class="my-comment">';
-                                    // Adicione a tag <form>
-                                    echo '<form method="POST" action="" class="comment-form">'; 
-                                        echo '<textarea name="comment-text" class="comment-input"></textarea>';
-                                        
-                                        // Input escondido para o PHP saber qual post está sendo comentado
-                                        echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
-                                        
-                                        // O botão com type="submit" e o name "action"
-                                        echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
-                                        
-                                        echo '<input type="hidden" name="id-user" value="' . $num_id . '">';
+                                    echo '<form method="POST" action="" class="comment-form"> ';
+                                        echo '<div contenteditable="true" class="comment-input" style="min-height: 40px; border: 1px solid #ccc; padding: 5px;" placeholder="Digite um comentário..."></div>';
+                                        echo '<input type="hidden" name="comment-text" class="hidden-comment-input">';
+                                            
+                                        echo '<div style="position: relative; display: inline-block;">';
+                                            echo '<button class="comment-emoji-btn" popovertarget="emoji-tab" type="button" style="background: none; border: none; cursor: pointer;">';
+                                                echo '<img src="../assets/icons/emoticons/smiling.png" width="20" alt="Emojis">';
+                                            echo '</button>';
+                                            echo '<div class="comment-emoji-picker" style="display: none; position: absolute; bottom: 100%; left: 0; z-index: 10; background: white; border: 1px solid #ccc; padding: 5px;"></div>';
+                                        echo '</div>';
 
+                                        echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
+                                            
+                                        echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
                                     echo '</form>';
                                 echo '</div>';
                                 
@@ -266,9 +269,11 @@
                                     
                                     // Exibir comentário - não escapar se for um comentário excluído
                                     if (strpos($c['comentario'], '[comentário excluído]') !== false) {
-                                        echo '<p>' . $c['comentario'] . '</p>';
+                                        echo '<p class="comment-text">' . $c['comentario'] . '</p>';
                                     } else {
-                                        echo '<p>' . htmlspecialchars($c['comentario']) . '</p>';
+                                        // Permite apenas a tag <img> para renderizar os emojis
+                                        $comentario_seguro = strip_tags($c['comentario'], '<img>');
+                                        echo '<p class="comment-text">' . $comentario_seguro . '</p>';
                                     }
                                     echo '<hr>';
                                 echo '</div>';
@@ -459,20 +464,155 @@
                     // Adiciona a escuta de submit apenas no formulário de novo post
                     document.querySelector('#novo-post form').addEventListener('submit', function(e) {
                         const editorDiv = document.querySelector('[contenteditable="true"]');
-                        if (editorDiv.textContent.trim() === '') {
+                        
+                        // Validamos usando innerHTML para considerar imagens (emojis) também
+                        if (editorDiv.innerHTML.trim() === '') {
                             e.preventDefault();
                             alert('Digite algo para postar!');
                             return;
                         }
+                        
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
                         hiddenInput.name = 'post';
-                        hiddenInput.value = editorDiv.textContent;
+                        
+                        // innerHTML vai capturar as tags <img> dos emojis corretamente
+                        hiddenInput.value = editorDiv.innerHTML; 
                         this.appendChild(hiddenInput);
                     });
  
+                    const emojiBtn = document.querySelector('.emojiButton');
+                    const emojiContainer = document.getElementById('emoji-picker-container');
+
+                    emojiBtn.addEventListener('click', function(e) {
+                        e.preventDefault(); // Evita qualquer comportamento estranho no form
+
+                        // Se o container estiver vazio, carrega o conteúdo via Fetch
+                        if (emojiContainer.innerHTML === "") {
+                            fetch('../components/new-post/emoji-tab.html') // Ajuste o caminho se necessário
+                                .then(res => res.text())
+                                .then(html => {
+                                    // Remove a tag <link> ou tags <body> extras se houver
+                                    emojiContainer.innerHTML = html;
+                                    
+                                    // Adicionar o emoji ao clicar nele
+                                    emojiContainer.addEventListener('click', (event) => {
+                                        if(event.target.tagName === 'IMG') {
+                                            const editor = document.querySelector('.input-text');
+                                            
+                                            // Garante que o editor está focado para inserir no lugar certo
+                                            editor.focus(); 
+                                            
+                                            // Pega o caminho da imagem que foi clicada na aba de emojis
+                                            const imgSrc = event.target.src;
+                                            const imgAlt = event.target.alt;
+                                            
+                                            // Monta a tag HTML da imagem (com um tamanho reduzido para parecer texto)
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style=" vertical-align: middle; margin: 0 2px;">`;
+                                            
+                                            // Insere a tag HTML da imagem onde o cursor do usuário está
+                                            document.execCommand('insertHTML', false, imgTag);
+                                        }
+                                    });
+                                });
+                        }
+
+                        // Toggle de visibilidade
+                        if (emojiContainer.style.display === 'none') {
+                            emojiContainer.style.display = 'block';
+                        } else {
+                            emojiContainer.style.display = 'none';
+                        }
+                    });
+
+                    // Fechar ao clicar fora
+                    document.addEventListener('click', function(event) {
+                        if (!emojiBtn.contains(event.target) && !emojiContainer.contains(event.target)) {
+                            emojiContainer.style.display = 'none';
+                        }
+                    });
 
                 });
+
+        // ==========================================
+            // LÓGICA DE EMOJIS PARA OS COMENTÁRIOS
+            // ==========================================
+            
+            const commentEmojiBtns = document.querySelectorAll('.comment-emoji-btn');
+
+            commentEmojiBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // O container do picker está logo depois do botão no HTML
+                    const pickerContainer = this.nextElementSibling; 
+                    // O editor do comentário está no mesmo formulário
+                    const form = this.closest('.comment-form');
+                    const editorDiv = form.querySelector('.comment-input');
+
+                    // Se o picker estiver vazio, carrega o HTML
+                    if (pickerContainer.innerHTML === "") {
+                        fetch('../components/new-post/emoji-tab.html')
+                            .then(res => res.text())
+                            .then(html => {
+                                pickerContainer.innerHTML = html;
+                                
+                                // Adiciona o evento de clique nos emojis
+                                pickerContainer.addEventListener('click', (event) => {
+                                    if(event.target.tagName === 'IMG') {
+                                        editorDiv.focus();
+                                        
+                                        const imgSrc = event.target.src;
+                                        const imgAlt = event.target.alt;
+                                        // Tag da imagem com largura fixa para não ficar gigante no comentário
+                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px; width: 18px; height: 18px;">`;
+                                        
+                                        document.execCommand('insertHTML', false, imgTag);
+                                    }
+                                });
+                            });
+                    }
+
+                    // Alternar a visibilidade
+                    if (pickerContainer.style.display === 'none' || pickerContainer.style.display === '') {
+                        // Fecha todos os outros pickers abertos antes de abrir este (opcional, mas evita bagunça)
+                        document.querySelectorAll('.comment-emoji-picker').forEach(p => p.style.display = 'none');
+                        pickerContainer.style.display = 'block';
+                    } else {
+                        pickerContainer.style.display = 'none';
+                    }
+                });
+            });
+
+            // Fechar os pickers de comentário ao clicar em qualquer lugar fora deles
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.comment-emoji-btn') && !event.target.closest('.comment-emoji-picker')) {
+                    document.querySelectorAll('.comment-emoji-picker').forEach(picker => {
+                        picker.style.display = 'none';
+                    });
+                }
+            });
+
+            // Atualizar o input hidden antes de enviar o formulário de comentário
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const editorDiv = this.querySelector('.comment-input');
+                    const hiddenInput = this.querySelector('.hidden-comment-input');
+
+                    // Se os elementos existirem (evita erros em formulários antigos)
+                    if (editorDiv && hiddenInput) {
+                        if (editorDiv.innerHTML.trim() === '') {
+                            e.preventDefault();
+                            alert('Digite algo para comentar!');
+                            return;
+                        }
+                        // Passa o HTML completo (texto + imagens de emoji) para o input oculto
+                        hiddenInput.value = editorDiv.innerHTML;
+                    }
+                });
+            });
+
+
         });
 
 
