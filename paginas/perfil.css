@@ -250,4 +250,27 @@ body {
   }
   .mural-item p {
   }
+
+  .bio-container {
+    display: grid;
+    justify-content: center;
+  }
+
+.bio-display p {
+    max-width: 400px; /* Limite de largura */
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* Trava em 3 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    white-space: pre-wrap;
+}
+
+.bio-input {
+    max-width: 300px; /* Mesma largura no editor */
+    max-height: 80px; /* Evita que a caixa de edição cresça demais */
+    overflow-y: auto;
+}
 }

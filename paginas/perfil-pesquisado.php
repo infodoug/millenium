@@ -43,7 +43,7 @@
 
 
     // busca usuário pesquisado com prepared statement
-    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE idusuarios = ?";
+    $sql = "SELECT idusuarios, nome, foto, bio FROM usuarios WHERE idusuarios = ?";
     if ($stmtp = $conexao->prepare($sql)) {
         $stmtp->bind_param("i", $num_id);
         $stmtp->execute();
@@ -146,6 +146,31 @@
                         <?php
                             echo $user_pesq_data['nome'];
                         ?>
+                    <div class="bio-container" style="margin: 10px 0;">
+                            <?php 
+                                // Pega a bio do banco de dados (se não existir, mostra vazio)
+                                $bio_atual = !empty($user_pesq_data['bio']) ? strip_tags($user_pesq_data['bio'], '<img>') : "Nenhuma biografia definida."; 
+                            ?>
+                            
+                            <div class="bio-display" id="bio-display">
+                                <?php 
+                                    // 1. Pegamos o que está no banco de dados
+                                    $texto_bio = $user_pesq_data['bio']; 
+
+                                    // 2. Se o texto NÃO estiver vazio, limpamos as tags e mostramos
+                                    if (!empty($texto_bio)) {
+                                        echo '<p style="margin: 0; font-size: 14px;">' . strip_tags($texto_bio, "<img><br>") . '</p>';
+                                    } else {
+                                        // 3. Se estiver realmente vazio, mostra a frase padrão
+                                        echo '<p style="margin: 0; font-size: 14px; color: #888;">Nenhuma biografia definida.</p>';
+                                    }
+                                ?>
+                                
+                                <?php if ($user_id === $num_id): // Só mostra o botão de editar se for o dono ?>
+                                    <button id="edit-bio-btn" style="...">✏️ Editar Bio</button>
+                                <?php endif; ?>
+                            </div>
+                    </div>
                         </div>
                         <button class="friend-button" onclick="sendFriendRequest()">
                             + Adicionar amigo

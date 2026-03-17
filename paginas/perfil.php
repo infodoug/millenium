@@ -7,7 +7,7 @@
 
     // dados do usuário logado
     $logado = $_SESSION['email'];
-    $result = $conexao->query("SELECT idusuarios, nome, foto FROM usuarios WHERE email='$logado'");
+    $result = $conexao->query("SELECT idusuarios, nome, foto, bio FROM usuarios WHERE email='$logado'");
     $user_data = mysqli_fetch_assoc($result);
     $user_id = (int) $user_data['idusuarios'];
     
@@ -24,6 +24,18 @@
     }
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+        // Lógica para atualizar a BIO
+        if (isset($_POST['action']) && $_POST['action'] == 'update-bio') {
+            $nova_bio = mysqli_real_escape_string($conexao, $_POST['bio-text']);
+            
+            // Atualiza no banco
+            mysqli_query($conexao, "UPDATE usuarios SET bio='$nova_bio' WHERE idusuarios='$user_id'");
+            
+            // Redireciona para atualizar a página
+            header("Location: perfil.php?id=" . $num_id);
+            exit();
+        }
         
         // Se veio upload de foto de perfil
         if (isset($_FILES['foto-perfil']) && $user_id === $num_id) {
@@ -157,9 +169,42 @@
                     ?>
                     <div class="infos">
                         <div class="nome">
-                            <?php
-                                echo $user_data['nome'];
+                            <?php echo $user_data['nome']; ?>
+                        </div>
+                        
+                        <div class="bio-container" style="margin: 10px 0;">
+                            <?php 
+                                // Pega a bio do banco de dados (se não existir, mostra vazio)
+                                $bio_atual = !empty($user_data['bio']) ? strip_tags($user_data['bio'], '<img>') : "Nenhuma biografia definida."; 
                             ?>
+                            
+                            <div class="bio-display" id="bio-display">
+                                <p style="margin: 0; font-size: 14px;"><?php echo strip_tags($user_data['bio'], '<img><br>'); ?></p>
+                                <?php if ($user_id === $num_id): ?>
+                                    <button id="edit-bio-btn" style="background: none; border: none; cursor: pointer; color: #888; font-size: 12px; margin-top: 5px; padding: 0;">✏️ Editar Bio</button>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if ($user_id === $num_id): ?>
+                            <div class="bio-form-container" id="bio-form-container" style="display: none;">
+                                <form method="POST" id="bio-form">
+                                    <div contenteditable="true" class="bio-input" style="min-height: 40px; border: 1px solid #ccc; padding: 5px; background: #fff; width: 100%; max-width: 300px; font-size: 14px;"><?php echo $user_data['bio']; ?></div>
+                                    <input type="hidden" name="bio-text" class="hidden-bio-input">
+                                    
+                                    <div class="bio-actions" style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                                        <div style="position: relative; display: inline-block;">
+                                            <button class="bio-emoji-btn" type="button" style="background: none; border: none; cursor: pointer;">
+                                                <img src="../assets/icons/emoticons/smiling.png" width="20" alt="Emojis">
+                                            </button>
+                                            <div class="bio-emoji-picker" style="display: none; position: absolute; top: 100%; left: 0; z-index: 10; background: white; border: 1px solid #ccc; padding: 5px;"></div>
+                                        </div>
+                                        
+                                        <button type="submit" name="action" value="update-bio" style="padding: 2px 8px; font-size: 12px;">Salvar</button>
+                                        <button type="button" id="cancel-bio-btn" style="padding: 2px 8px; font-size: 12px; background: #ccc; border: none; cursor:pointer;">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <?php endif; ?>
                         </div>
                         <button id="criarPost-button">
                             <img src="../assets/icons/plusSymbol.png" alt="">
@@ -693,6 +738,108 @@
                     });
                 }
             }
+
+        // ==========================================
+                // LÓGICA DE EDIÇÃO E EMOJIS PARA A BIO
+                // ==========================================
+                const editBioBtn = document.getElementById('edit-bio-btn');
+                const cancelBioBtn = document.getElementById('cancel-bio-btn');
+                const bioDisplay = document.getElementById('bio-display');
+                const bioFormContainer = document.getElementById('bio-form-container');
+                const bioForm = document.getElementById('bio-form');
+                const bioEditorDiv = document.querySelector('.bio-input');
+                const hiddenBioInput = document.querySelector('.hidden-bio-input');
+                const bioEmojiBtn = document.querySelector('.bio-emoji-btn');
+                const bioPickerContainer = document.querySelector('.bio-emoji-picker');
+
+                if (editBioBtn && bioFormContainer) {
+                    // Abrir modo de edição
+                    editBioBtn.addEventListener('click', () => {
+                        bioDisplay.style.display = 'none';
+                        bioFormContainer.style.display = 'block';
+                        bioEditorDiv.focus(); // Já deixa o cursor piscando
+                    });
+
+                    // Cancelar modo de edição
+                    cancelBioBtn.addEventListener('click', () => {
+                        bioFormContainer.style.display = 'none';
+                        bioDisplay.style.display = 'block';
+                    });
+
+                    // Abrir e fechar aba de emojis da Bio
+                    bioEmojiBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        if (bioPickerContainer.innerHTML === "") {
+                            fetch('../components/new-post/emoji-tab.html')
+                                .then(res => res.text())
+                                .then(html => {
+                                    bioPickerContainer.innerHTML = html;
+                                    
+                                    // Inserir emoji ao clicar
+                                    bioPickerContainer.addEventListener('click', (event) => {
+                                        if(event.target.tagName === 'IMG') {
+                                            bioEditorDiv.focus();
+                                            const imgSrc = event.target.src;
+                                            const imgAlt = event.target.alt;
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
+                                            document.execCommand('insertHTML', false, imgTag);
+                                        }
+                                    });
+                                });
+                        }
+
+                        // Alterna visibilidade do picker da bio
+                        if (bioPickerContainer.style.display === 'none' || bioPickerContainer.style.display === '') {
+                            // Esconde pickers de outras áreas se estiverem abertos
+                            document.querySelectorAll('.comment-emoji-picker, .mural-emoji-picker').forEach(p => p.style.display = 'none');
+                            bioPickerContainer.style.display = 'block';
+                        } else {
+                            bioPickerContainer.style.display = 'none';
+                        }
+                    });
+
+                    // Fechar picker ao clicar fora dele
+                    document.addEventListener('click', function(event) {
+                        if (!event.target.closest('.bio-emoji-btn') && !event.target.closest('.bio-emoji-picker')) {
+                            if (bioPickerContainer) bioPickerContainer.style.display = 'none';
+                        }
+                    });
+
+                    // Enviar os dados da div editável para o input hidden antes de salvar
+                    bioForm.addEventListener('submit', function() {
+                        // Ao contrário das outras opções, não colocamos verificação de vazio,
+                        // porque o usuário pode querer apagar a bio inteira.
+                        hiddenBioInput.value = bioEditorDiv.innerHTML;
+                    });
+                }
+
+            const MAX_CHARS = 300; // Defina o limite aqui
+
+            // Impede colar texto muito grande ou digitar além do limite
+            bioEditorDiv.addEventListener('input', function() {
+                if (this.innerText.length > MAX_CHARS) {
+                    this.innerText = this.innerText.substring(0, MAX_CHARS);
+                    // Move o cursor para o final após o corte
+                    const range = document.createRange();
+                    const sel = window.getSelection();
+                    range.selectNodeContents(this);
+                    range.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    alert("A bio pode ter no máximo " + MAX_CHARS + " caracteres.");
+                }
+            });
+
+            // No momento do Submit, também limpamos o excesso
+            bioForm.addEventListener('submit', function(e) {
+                if (bioEditorDiv.innerText.length > MAX_CHARS) {
+                    e.preventDefault();
+                    alert("Bio muito longa!");
+                    return;
+                }
+                hiddenBioInput.value = bioEditorDiv.innerHTML;
+            });
 
 
         });
