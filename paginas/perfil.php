@@ -305,10 +305,22 @@
                 <h3>Mural de Recados</h3>
                 
                 <div class="mural-form">
-                    <form method="POST">
-                        <textarea class="mural-textarea" name="mural-text" placeholder="Escreva algo no mural..." required></textarea>
+                    <form method="POST" class="mural-form-action">
+                        <div contenteditable="true" class="mural-input" style="min-height: 60px; border: 1px solid #ccc; padding: 5px; background: #fff; width: 100%;" placeholder="Escreva algo no mural..."></div>
+                        
+                        <input type="hidden" name="mural-text" class="hidden-mural-input">
                         <input type="hidden" name="perfil_id" value="<?php echo $num_id; ?>">
-                        <button type="submit" name="action" value="post-mural">Fixar no Mural</button>
+
+                        <div class="mural-actions" style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                            <div style="position: relative; display: inline-block;">
+                                <button class="mural-emoji-btn" type="button" style="background: none; border: none; cursor: pointer;">
+                                    <img src="../assets/icons/emoticons/smiling.png" width="20" alt="Emojis">
+                                </button>
+                                <div class="mural-emoji-picker" style="display: none; position: absolute; bottom: 100%; left: 0; z-index: 10; background: white; border: 1px solid #ccc; padding: 5px;"></div>
+                            </div>
+                            
+                            <button type="submit" name="action" value="post-mural">Fixar no Mural</button>
+                        </div>
                     </form>
                 </div>
 
@@ -334,7 +346,9 @@
                                         echo '<strong>' . htmlspecialchars($recado['nome']) . '</strong>';
                                         /* echo '<span class="mural-date">' . date('d/m/H:i', strtotime($recado['data_postagem'])) . '</span>'; */
                                     echo '</div>';
-                                    echo '<p>' . nl2br(htmlspecialchars($recado['mensagem'])) . '</p>';
+                                    // Usa o strip_tags para liberar APENAS a tag <img>, igual aos comentários
+                                    $mensagem_segura = strip_tags($recado['mensagem'], '<img>');
+                                    echo '<p>' . nl2br($mensagem_segura) . '</p>';
                                 echo '</div>';
                             }
                         } else {
@@ -614,6 +628,71 @@
                     }
                 });
             });
+
+            // ==========================================
+            // LÓGICA DE EMOJIS PARA O MURAL
+            // ==========================================
+            const muralEmojiBtn = document.querySelector('.mural-emoji-btn');
+            const muralPickerContainer = document.querySelector('.mural-emoji-picker');
+            const muralEditorDiv = document.querySelector('.mural-input');
+            const muralForm = document.querySelector('.mural-form-action');
+            const hiddenMuralInput = document.querySelector('.hidden-mural-input');
+
+            if (muralEmojiBtn) {
+                // Abrir e fechar aba de emojis
+                muralEmojiBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    if (muralPickerContainer.innerHTML === "") {
+                        fetch('../components/new-post/emoji-tab.html')
+                            .then(res => res.text())
+                            .then(html => {
+                                muralPickerContainer.innerHTML = html;
+                                
+                                // Inserir emoji ao clicar
+                                muralPickerContainer.addEventListener('click', (event) => {
+                                    if(event.target.tagName === 'IMG') {
+                                        muralEditorDiv.focus();
+                                        
+                                        const imgSrc = event.target.src;
+                                        const imgAlt = event.target.alt;
+                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
+                                        
+                                        document.execCommand('insertHTML', false, imgTag);
+                                    }
+                                });
+                            });
+                    }
+
+                    // Alterna visibilidade do picker do mural
+                    if (muralPickerContainer.style.display === 'none' || muralPickerContainer.style.display === '') {
+                        // Esconde pickers de comentários se estiverem abertos
+                        document.querySelectorAll('.comment-emoji-picker').forEach(p => p.style.display = 'none');
+                        muralPickerContainer.style.display = 'block';
+                    } else {
+                        muralPickerContainer.style.display = 'none';
+                    }
+                });
+
+                // Fechar picker ao clicar fora
+                document.addEventListener('click', function(event) {
+                    if (!event.target.closest('.mural-emoji-btn') && !event.target.closest('.mural-emoji-picker')) {
+                        if (muralPickerContainer) muralPickerContainer.style.display = 'none';
+                    }
+                });
+
+                // Enviar os dados da div editável para o input hidden antes do submit
+                if (muralForm) {
+                    muralForm.addEventListener('submit', function(e) {
+                        if (muralEditorDiv.innerHTML.trim() === '') {
+                            e.preventDefault();
+                            alert('Digite algo para fixar no mural!');
+                            return;
+                        }
+                        hiddenMuralInput.value = muralEditorDiv.innerHTML;
+                    });
+                }
+            }
 
 
         });
