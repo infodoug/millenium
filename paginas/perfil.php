@@ -7,7 +7,7 @@
 
     // dados do usuário logado
     $logado = $_SESSION['email'];
-    $result = $conexao->query("SELECT idusuarios, nome, foto, bio FROM usuarios WHERE email='$logado'");
+    $result = $conexao->query("SELECT idusuarios, nome, foto, bio, emocao_emoji, emocao_texto FROM usuarios WHERE email='$logado'");
     $user_data = mysqli_fetch_assoc($result);
     $user_id = (int) $user_data['idusuarios'];
     
@@ -24,6 +24,18 @@
     }
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+        if (isset($_POST['action']) && $_POST['action'] == 'update-emocao') {
+            $emoji = mysqli_real_escape_string($conexao, $_POST['emocao-emoji']);
+            $texto = mysqli_real_escape_string($conexao, $_POST['emocao-texto']);
+            
+            // Limita a 20 caracteres por segurança no servidor também
+            $texto = mb_substr($texto, 0, 20);
+
+            mysqli_query($conexao, "UPDATE usuarios SET emocao_emoji='$emoji', emocao_texto='$texto' WHERE idusuarios='$user_id'");
+            header("Location: perfil.php?id=" . $num_id);
+            exit();
+        }
 
         // Lógica para atualizar a BIO
         if (isset($_POST['action']) && $_POST['action'] == 'update-bio') {
@@ -152,10 +164,35 @@
         <div class="container-perfil">
             <div class="center-perfil">
                 <div class="header-perfil">
-                    <div class="foto">
-                        <img height="170" width="170" src='../<?php echo $user_data['foto']; ?>' alt='erro na imagem'></img>
-
+                    <div  style="cursor: pointer;" onclick="document.getElementById('foto-perfil-input').click();">
+                        <img class="foto" height="170" width="170" src='../<?php echo $user_data['foto']; ?>' alt='Foto de perfil' id="main-profile-img">
                     </div>
+                    <?php if ($user_id === $num_id): ?>
+                            <button id="edit-foto-button" class="edit-foto-btn" title="Alterar Emoção" type="button">
+                                <?php if(!empty($user_data['emocao_emoji'])): ?>
+                                    <img src="<?php echo $user_data['emocao_emoji']; ?>" alt="Emoção atual">
+                                <?php else: ?>
+                                    <img src="../assets/icons/emoticons/smiling.png" alt="Definir Emoção">
+                                <?php endif; ?>
+                            </button>
+
+                            <form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">
+                                <input type="file" name="foto-perfil" id="foto-perfil-input" accept="image/jpeg,image/png" onchange="document.getElementById('foto-form').submit();">
+                            </form>
+
+                            <div id="emocao-modal" style="display:none; position: absolute; z-index: 100; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                                <form method="POST">
+                                    <p style="font-size: 12px; margin-bottom: 5px;">Escolha um emoji e status:</p>
+                                    <div id="emoji-selector-emocao" style="margin-bottom: 5px; display: flex; gap: 5px; flex-wrap: wrap; max-width: 200px;">
+                                        <img src="../assets/icons/emoticons/smiling.png" class="emoji-opt" width="24" style="cursor:pointer">
+                                        <img src="../assets/icons/emoticons/ohdear.png" class="emoji-opt" width="24" style="cursor:pointer">
+                                        </div>
+                                    <input type="hidden" name="emocao-emoji" id="input-emocao-emoji" value="<?php echo $user_data['emocao_emoji']; ?>">
+                                    <input type="text" name="emocao-texto" maxlength="20" placeholder="Estou me sentindo..." value="<?php echo $user_data['emocao_texto']; ?>" style="width: 100%; margin-bottom: 5px;">
+                                    <button type="submit" name="action" value="update-emocao" style="width: 100%;">Salvar</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
                     <?php
                         // Mostrar botão de editar foto apenas para o próprio perfil
                         if ($user_id === $num_id) {
@@ -841,6 +878,26 @@
                 hiddenBioInput.value = bioEditorDiv.innerHTML;
             });
 
+            // Abrir modal de emoção
+            const btnEmocao = document.getElementById('edit-foto-button');
+            const modalEmocao = document.getElementById('emocao-modal');
+
+            if(btnEmocao) {
+                btnEmocao.addEventListener('click', (e) => {
+                    modalEmocao.style.display = modalEmocao.style.display === 'none' ? 'block' : 'none';
+                    modalEmocao.style.top = (e.pageY + 10) + 'px';
+                    modalEmocao.style.left = (e.pageX - 100) + 'px';
+                });
+            }
+
+            // Seleção de emoji no modal
+            document.querySelectorAll('.emoji-opt').forEach(img => {
+                img.addEventListener('click', function() {
+                    document.getElementById('input-emocao-emoji').value = this.src;
+                    document.querySelectorAll('.emoji-opt').forEach(i => i.style.border = "none");
+                    this.style.border = "2px solid blue";
+                });
+            });
 
         });
 
