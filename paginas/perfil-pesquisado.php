@@ -130,6 +130,7 @@
     <link rel="stylesheet" href="perfil.css">
     <link rel="stylesheet" href="../components/header/header.css">
     <link rel="stylesheet" href="../components/friend-button.css">
+    <link rel="stylesheet" href="../components/comment-menu/comment-menu.css">
     <title>Millenium - <?php echo $user_data['nome'] ?></title>
 </head>
 <body>
@@ -246,25 +247,40 @@
                                 
 
 
-                            $stmt_c = $conexao->prepare("
-                                SELECT c.comentario, u.nome, u.foto
-                                FROM comentarios c
-                                JOIN usuarios u ON c.userid = u.idusuarios
-                                WHERE c.postid = ?
-                                ORDER BY c.postid ASC
-                            ");
-                            $stmt_c->bind_param("i", $linhapost['postid']);
-                            $stmt_c->execute();
-                            $res_c = $stmt_c->get_result();
+                                $stmt_c = $conexao->prepare("
+                                    SELECT c.idcomentarios, c.comentario, c.userid, u.nome, u.foto
+                                    FROM comentarios c
+                                    JOIN usuarios u ON c.userid = u.idusuarios
+                                    WHERE c.postid = ?
+                                    ORDER BY c.idcomentarios DESC
+                                ");
+                                $stmt_c->bind_param("i", $linhapost['postid']);
+                                $stmt_c->execute();
+                                $res_c = $stmt_c->get_result();
 
-                            while ($c = $res_c->fetch_assoc()){
+                                while ($c = $res_c->fetch_assoc()){
 
                                     echo '<div class="comment">';
                                         echo '<div class="comment-header">';
                                         echo '<img width="20" src="../' . $c['foto'] . '">';
                                         echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                        
+                                        // AQUI ESTÁ A MÁGICA: Mostrar menu apenas para comentários do usuário logado
+                                        if ((int)$c['userid'] === $user_id) {
+                                            echo '<div class="comment-menu-container">';
+                                            echo '<button class="comment-menu-btn" title="Opções do comentário">';
+                                            echo '<img src="../assets/icons/arrow-down.png" alt="Menu">';
+                                            echo '</button>';
+                                            echo '<div class="comment-menu">';
+                                            echo '<button class="comment-menu-item delete" data-comment-id="' . htmlspecialchars($c['idcomentarios']) . '">';
+                                            echo '<span>🗑️ Deletar</span>';
+                                            echo '</button>';
+                                            echo '</div>';
+                                            echo '</div>';
+                                        }
+                                        
                                         echo '</div>';
-
+                                        
                                         // Verifica se foi excluído e processa os emojis usando strip_tags
                                         if (strpos($c['comentario'], '[comentário excluído]') !== false) {
                                             echo '<p>' . $c['comentario'] . '</p>';
@@ -275,7 +291,7 @@
 
                                         echo '<hr>';
                                     echo '</div>';
-                            }
+                                }
 
                             $stmt_c->close();
 
@@ -787,5 +803,6 @@
 
         
     </script>
+    <script src="../components/comment-menu/comment-menu.js"></script>
 </body>
 </html>
