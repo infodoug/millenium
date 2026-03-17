@@ -236,19 +236,21 @@
                                             echo '<div contenteditable="true" class="comment-input" style="min-height: 40px; border: 1px solid #ccc; padding: 5px;" placeholder="Digite um comentário..."></div>';
                                             echo '<input type="hidden" name="comment-text" class="hidden-comment-input">';
                                             
-                                            // Botão de emoji e container do picker
-                                            echo '<div style="position: relative; display: inline-block;">';
-                                                echo '<button class="comment-emoji-btn" popovertarget="emoji-tab" type="button" style="background: none; border: none; cursor: pointer;">';
-                                                    echo '<img src="../assets/icons/emoticons/smiling.png" width="20" alt="Emojis">';
-                                                echo '</button>';
-                                                echo '<div class="comment-emoji-picker" style="display: none; position: absolute; bottom: 100%; left: 0; z-index: 10; background: white; border: 1px solid #ccc; padding: 5px;"></div>';
-                                            echo '</div>';
+                                            echo '<div class="comment-actions">';
+                                                // Botão de emoji e container do picker
+                                                echo '<div style="position: relative; display: inline; width:fit-content;">';
+                                                    echo '<button class="comment-emoji-btn" popovertarget="emoji-tab" type="button" style="background: none; border: none; cursor: pointer;">';
+                                                        echo '<img src="../assets/icons/emoticons/smiling.png" width="20" alt="Emojis">';
+                                                    echo '</button>';
+                                                    echo '<div class="comment-emoji-picker" style="display: none; position: absolute; bottom: 100%; left: 0; z-index: 10; background: white; border: 1px solid #ccc; padding: 5px;"></div>';
+                                                echo '</div>';
 
-                                            // Inputs escondidos originais
-                                            echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
-                                            // Se for no perfil.php, adicione aqui o input do id-user que já existia lá.
-                                            
-                                            echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
+                                                // Inputs escondidos originais
+                                                echo '<input type="hidden" name="post_id" value="' . $linhapost['postid'] . '">';
+                                                // Se for no perfil.php, adicione aqui o input do id-user que já existia lá.
+                                                
+                                                echo '<button class="send-comment" type="submit" name="action" value="send-comment">Comentar</button>';
+                                            echo '</div>';
                                         echo '</form>';
                                     echo '</div>';
                                     
@@ -260,7 +262,7 @@
                                     FROM comentarios c
                                     JOIN usuarios u ON c.userid = u.idusuarios
                                     WHERE c.postid = ?
-                                    ORDER BY c.idcomentarios ASC
+                                    ORDER BY c.idcomentarios DESC
                                 ");
                                 $stmt_c->bind_param("i", $linhapost['postid']);
                                 $stmt_c->execute();
