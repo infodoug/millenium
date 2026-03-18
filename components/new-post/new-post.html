@@ -14,7 +14,7 @@
           </div>
         </div>
         <!-- <textarea class="input-text" name="post" rows="1"></textarea> -->
-        <div class="input-text" name="post" contenteditable="true" class="editor" placeholder="Digite o texto do post..."></div>
+        <div id="editor-postagem" class="input-text" name="post" contenteditable="true" class="editor" placeholder="Digite o texto do post..."></div>
         <button class="emojiButton" type="button">
           <img src="../assets/icons/emoticons/smiling.png" alt="">
         </button>
@@ -34,14 +34,21 @@
   </div>
 
   <script>
-  document.querySelector('form').addEventListener('submit', function(e) {
-      const editorDiv = document.querySelector('[contenteditable="true"]');
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = 'post';
-      hiddenInput.value = editorDiv.textContent;
-      this.appendChild(hiddenInput);
-  });
+document.querySelector('#novo-post form').addEventListener('submit', function(e) {
+    const editorDiv = document.getElementById('editor-postagem'); // Usa a ID específica
+    
+    if (editorDiv.innerHTML.trim() === '') {
+        e.preventDefault();
+        alert('Digite algo para postar!');
+        return;
+    }
+    
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'post';
+    hiddenInput.value = editorDiv.innerHTML; 
+    this.appendChild(hiddenInput);
+});
 
 
   </script>

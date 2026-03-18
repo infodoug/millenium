@@ -167,7 +167,6 @@
                     <div  style="cursor: pointer;" onclick="document.getElementById('foto-perfil-input').click();">
                         <img class="foto" height="170" width="170" src='../<?php echo $user_data['foto']; ?>' alt='Foto de perfil' id="main-profile-img">
                     </div>
-                    <?php if ($user_id === $num_id): ?>
                             <button id="edit-emocao" class="edit-emocao" title="Alterar Emoção" type="button">
                                 <?php if(!empty($user_data['emocao_emoji'])): ?>
                                     <img src="<?php echo $user_data['emocao_emoji']; ?>" alt="Emoção atual">
@@ -180,6 +179,8 @@
                                     </span>
                                 <?php endif; ?>
                             </button>
+                    <?php if ($user_id === $num_id): ?>
+
 
                             <form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">
                                 <input type="file" name="foto-perfil" id="foto-perfil-input" accept="image/jpeg,image/png" onchange="document.getElementById('foto-form').submit();">
@@ -564,7 +565,7 @@
 
                     // Adiciona a escuta de submit apenas no formulário de novo post
                     document.querySelector('#novo-post form').addEventListener('submit', function(e) {
-                        const editorDiv = document.querySelector('[contenteditable="true"]');
+                        const editorDiv = document.getElementById('editor-postagem');
                         
                         // Validamos usando innerHTML para considerar imagens (emojis) também
                         if (editorDiv.innerHTML.trim() === '') {
