@@ -43,7 +43,7 @@
 
 
     // busca usuário pesquisado com prepared statement
-    $sql = "SELECT idusuarios, nome, foto, bio FROM usuarios WHERE idusuarios = ?";
+    $sql = "SELECT idusuarios, nome, foto, bio, emocao_emoji, emocao_texto FROM usuarios WHERE idusuarios = ?";
     if ($stmtp = $conexao->prepare($sql)) {
         $stmtp->bind_param("i", $num_id);
         $stmtp->execute();
@@ -141,6 +141,19 @@
                 <div class="header-perfil">
                     <div class="foto">
                         <img height="170" width="170" src='../<?php echo $user_pesq_data['foto']; ?>' alt='erro na imagem'></img>
+                    </div>
+                    <div id="edit-emocao">
+                        <?php if (!empty($user_pesq_data['emocao_emoji'])): ?>
+                            <div class="user-status-display">
+                                <img src="<?php echo $user_pesq_data['emocao_emoji']; ?>" alt="Emoji de Status" style="width: 25px; height: 25px;">
+                                
+                                <?php if (!empty($user_pesq_data['emocao_texto'])): ?>
+                                    <span class="status-text">
+                                        <?php echo htmlspecialchars($user_pesq_data['emocao_texto']); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="infos">
                         <div class="nome">
