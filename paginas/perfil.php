@@ -168,7 +168,7 @@
                         <img class="foto" height="170" width="170" src='../<?php echo $user_data['foto']; ?>' alt='Foto de perfil' id="main-profile-img">
                     </div>
                     <?php if ($user_id === $num_id): ?>
-                            <button id="edit-foto-button" class="edit-foto-btn" title="Alterar Emoção" type="button">
+                            <button id="edit-emocao" class="edit-emocao" title="Alterar Emoção" type="button">
                                 <?php if(!empty($user_data['emocao_emoji'])): ?>
                                     <img src="<?php echo $user_data['emocao_emoji']; ?>" alt="Emoção atual">
                                 <?php else: ?>
@@ -183,10 +183,7 @@
                             <div id="emocao-modal" style="display:none; position: absolute; z-index: 100; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
                                 <form method="POST">
                                     <p style="font-size: 12px; margin-bottom: 5px;">Escolha um emoji e status:</p>
-                                    <div id="emoji-selector-emocao" style="margin-bottom: 5px; display: flex; gap: 5px; flex-wrap: wrap; max-width: 200px;">
-                                        <img src="../assets/icons/emoticons/smiling.png" class="emoji-opt" width="24" style="cursor:pointer">
-                                        <img src="../assets/icons/emoticons/ohdear.png" class="emoji-opt" width="24" style="cursor:pointer">
-                                        </div>
+                                    <div id="emoji-emocoes"></div>
                                     <input type="hidden" name="emocao-emoji" id="input-emocao-emoji" value="<?php echo $user_data['emocao_emoji']; ?>">
                                     <input type="text" name="emocao-texto" maxlength="20" placeholder="Estou me sentindo..." value="<?php echo $user_data['emocao_texto']; ?>" style="width: 100%; margin-bottom: 5px;">
                                     <button type="submit" name="action" value="update-emocao" style="width: 100%;">Salvar</button>
@@ -195,14 +192,14 @@
                         <?php endif; ?>
                     <?php
                         // Mostrar botão de editar foto apenas para o próprio perfil
-                        if ($user_id === $num_id) {
+/*                         if ($user_id === $num_id) {
                             echo '<button id="edit-foto-button" class="edit-foto-btn" title="Trocar foto de perfil">
                                 <img src="../assets/icons/emoticons/smiling.png" alt="Trocar foto de perfil">
                             </button>';
                             echo '<form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">';
                             echo '<input type="file" name="foto-perfil" id="foto-perfil-input" accept="image/jpeg,image/png" required>';
                             echo '</form>';
-                        }
+                        } */
                     ?>
                     <div class="infos">
                         <div class="nome">
@@ -878,28 +875,36 @@
                 hiddenBioInput.value = bioEditorDiv.innerHTML;
             });
 
-            // Abrir modal de emoção
-            const btnEmocao = document.getElementById('edit-foto-button');
-            const modalEmocao = document.getElementById('emocao-modal');
 
-            if(btnEmocao) {
-                btnEmocao.addEventListener('click', (e) => {
-                    modalEmocao.style.display = modalEmocao.style.display === 'none' ? 'block' : 'none';
-                    modalEmocao.style.top = (e.pageY + 10) + 'px';
-                    modalEmocao.style.left = (e.pageX - 100) + 'px';
-                });
-            }
 
-            // Seleção de emoji no modal
-            document.querySelectorAll('.emoji-opt').forEach(img => {
-                img.addEventListener('click', function() {
-                    document.getElementById('input-emocao-emoji').value = this.src;
-                    document.querySelectorAll('.emoji-opt').forEach(i => i.style.border = "none");
-                    this.style.border = "2px solid blue";
-                });
-            });
 
         });
+
+            // Abrir modal de emoção
+            fetch('../components/new-post/emoji-tab.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('emoji-emocoes').innerHTML = data;
+                    const btnEmocao = document.getElementById('edit-emocao');
+                    const modalEmocao = document.getElementById('emocao-modal');
+
+                    if(btnEmocao) {
+                        btnEmocao.addEventListener('click', (e) => {
+                            modalEmocao.style.display = modalEmocao.style.display === 'none' ? 'block' : 'none';
+                            modalEmocao.style.top = (e.pageY + 10) + 'px';
+                            modalEmocao.style.left = (e.pageX - 100) + 'px';
+                        });
+                    }
+
+                    // Seleção de emoji no modal
+                    document.querySelectorAll('.emoji-opt').forEach(img => {
+                        img.addEventListener('click', function() {
+                            document.getElementById('input-emocao-emoji').value = this.src;
+                            document.querySelectorAll('.emoji-opt').forEach(i => i.style.border = "none");
+                            this.style.border = "2px solid blue";
+                        });
+                    });
+            });
 
 
 

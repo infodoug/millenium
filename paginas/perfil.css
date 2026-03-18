@@ -93,7 +93,7 @@ body {
       }
     }
 
-    .edit-foto-btn {
+    #edit-emocao {
       position: absolute;
       bottom: 30%;
       left: -15px;
@@ -120,6 +120,44 @@ body {
       }
     
     }
+
+/* 1. Força o modal a ficar POR CIMA de tudo e ignora o corte da sidebar */
+    #emocao-modal {
+        position: fixed !important; /* Muda para fixed para não ser cortado pela sidebar */
+        z-index: 10000 !important;
+        background: #fdfdfd;
+        border: 2px solid #a622a6;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        width: 250px;
+    }
+
+    /* 2. CORREÇÃO DOS 2 EMOJIS: Reseta o grid do componente que está quebrando */
+    #emocao-modal .emoji-tab {
+        position: static !important; /* Tira o absolute que vem do arquivo original */
+        display: block !important;   /* Muda de grid para block para os emojis fluírem */
+        width: 100% !important;
+        height: 150px !important;    /* Define uma altura interna para o scroll funcionar */
+        overflow-y: auto !important; /* Ativa o scroll se tiver muito emoji */
+        background: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Ajusta o tamanho das imagens para caberem em colunas */
+    #emocao-modal .emoji-list img {
+        width: 32px !important;
+        height: 32px !important;
+        margin: 4px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    
+    #emocao-modal .emoji-list img:hover {
+        background: #f0f0f0;
+        transform: scale(1.2);
+    }
+    
 
     .infos {
       width: 850px;
