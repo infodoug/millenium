@@ -174,6 +174,11 @@
                                 <?php else: ?>
                                     <img src="../assets/icons/emoticons/smiling.png" alt="Definir Emoção">
                                 <?php endif; ?>
+                                <?php if (!empty($user_data['emocao_texto'])): ?>
+                                    <span class="status-text">
+                                        <?php echo htmlspecialchars($user_data['emocao_texto']); ?>
+                                    </span>
+                                <?php endif; ?>
                             </button>
 
                             <form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">
