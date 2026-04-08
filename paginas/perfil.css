@@ -125,13 +125,14 @@ body {
       position: absolute;
       top: 35px;
       left: -60px;
-      font-size: 14px;
+      font-size: 13px;
       width: 70px;
       background-color: #faecca;
       border: 1px solid #131313;
       padding: 2px;
       border-radius: 5px 0 5px 5px;
       overflow-wrap: break-word;
+      box-shadow: 2px 2px 0px rgba(0,0,0);
     }
 
 /* 1. Força o modal a ficar POR CIMA de tudo e ignora o corte da sidebar */

@@ -12,40 +12,24 @@
     $senha = $_POST['senha'];
     $path = 'assets/icons/default-avatar.png';
 
-    // Só faz a checagem de foto se o usuário realmente enviou uma
-    if (isset($_FILES['arquivo']) && $_FILES['arquivo']['error'] === UPLOAD_ERR_OK) {
-        $arquivo = $_FILES['arquivo'];
-        
-        if($arquivo['size'] > 2097152 * 25) {
-            die("Arquivo muito grande! Max: 50MB");
-        }
-        
-        $pasta = "arquivos/";
-        $nomeDoArquivo = $arquivo['name'];
-        $novoNomeDoArquivo = uniqid();
-        $extensao = strtolower(pathinfo($nomeDoArquivo,PATHINFO_EXTENSION));
+    // Se o frontend enviou imagem já recortada (base64)
+    if (!empty($_POST['arquivo_data'])) {
+      $imgData = $_POST['arquivo_data'];
+      if (preg_match('/^data:(image\/png|image\/jpeg);base64,(.*)$/', $imgData, $m)) {
+        $mime = $m[1]; $data = base64_decode($m[2]); if ($data === false) die('Falha ao decodificar imagem.');
+        $ext = ($mime === 'image/png') ? 'png' : 'jpg';
+        $novoNomeDoArquivo = uniqid(); $pasta = 'arquivos/'; $path_temp = $pasta . $novoNomeDoArquivo . '.' . $ext; file_put_contents($path_temp, $data); $path = $path_temp;
+      } else { die('Formato de imagem inválido.'); }
+    }
 
-        if($extensao != 'jpg' && $extensao != 'png') {
-            die('Tipo de arquivo inválido!');
-        }
-
-        // Validar proporção 1:1 (quadrada)
-        $img_info = getimagesize($arquivo['tmp_name']);
-        if ($img_info !== false) {
-            $largura = $img_info[0];
-            $altura = $img_info[1];
-            
-            if ($largura != $altura) {
-                die('A imagem deve ter proporção 1:1 (quadrada)! Envie uma foto de tamanho igual (ex: 500x500).');
-            }
-        }
-
-        $path_temp = $pasta . $novoNomeDoArquivo . '.' . $extensao;
-        $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path_temp);
-        
-        if ($deu_certo) {
-            $path = $path_temp; // Salva o caminho para mandar pro banco
-        }
+    // Fallback: upload clássico (suporta `arquivo` ou `arquivo_file`)
+    if ((isset($_FILES['arquivo']) && $_FILES['arquivo']['error'] === UPLOAD_ERR_OK) || (isset($_FILES['arquivo_file']) && $_FILES['arquivo_file']['error'] === UPLOAD_ERR_OK)) {
+      $arquivo = isset($_FILES['arquivo_file']) ? $_FILES['arquivo_file'] : $_FILES['arquivo'];
+      if($arquivo['size'] > 2097152 * 25) { die("Arquivo muito grande! Max: 50MB"); }
+      $pasta = "arquivos/"; $nomeDoArquivo = $arquivo['name']; $novoNomeDoArquivo = uniqid(); $extensao = strtolower(pathinfo($nomeDoArquivo,PATHINFO_EXTENSION));
+      if($extensao != 'jpg' && $extensao != 'png') { die('Tipo de arquivo inválido!'); }
+      $path_temp = $pasta . $novoNomeDoArquivo . '.' . $extensao; $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path_temp);
+      if ($deu_certo) { $path = $path_temp; }
     }
 
     // AGORA SIM: Tenta salvar no banco de dados
@@ -91,7 +75,8 @@
           
         </div>
       </label>
-      <input id="inputImage" name="arquivo" type="file" style="display: none;"><br>
+      <input id="inputImage" name="arquivo_file" type="file" accept="image/*" style="display: none;"><br>
+      <input type="hidden" name="arquivo_data" id="arquivo_data">
       <!-- <label for="nome">Nome de Usuário:</label><br> -->
       <input placeholder="Digite seu nome" type="text" name="nome" id="nome" class="inputUser" required><br><br>
 
@@ -105,35 +90,15 @@
     </div>
   </form>
 
-  <script>
+    <link rel="stylesheet" href="scripts/image-cropper.css">
+    <script src="scripts/image-cropper.js"></script>
+    <script>
       const inputImage = document.getElementById('inputImage');
       const userCard = document.getElementById('userCard');
-
-      inputImage.addEventListener('change', function() {
-          const file = this.files[0]; // Pega o arquivo selecionado
-
-          if (file) {
-              const reader = new FileReader();
-
-              reader.onload = function(e) {
-                  // Limpa o conteúdo atual do card (caso tenha ícones ou texto)
-                  userCard.innerHTML = ''; 
-                  
-                  // Cria o elemento de imagem
-                  const img = document.createElement('img');
-                  img.src = e.target.result;
-                  img.style.width = '100%';
-                  img.style.height = '100%';
-                  img.style.borderRadius = '50%'; // Para ficar redondo igual ao perfil
-                  img.style.objectFit = 'cover';
-                  
-                  userCard.appendChild(img);
-              }
-
-              reader.readAsDataURL(file);
-          }
-      });
-  </script>
+      const arquivoHidden = document.getElementById('arquivo_data');
+      // bind input to cropper (no auto-submit here)
+      bindInputToCropper(document.getElementById('inputImage'), arquivoHidden, userCard);
+    </script>
 
 </body>
 </html>

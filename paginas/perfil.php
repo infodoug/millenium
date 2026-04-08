@@ -49,9 +49,20 @@
             exit();
         }
         
-        // Se veio upload de foto de perfil
-        if (isset($_FILES['foto-perfil']) && $user_id === $num_id) {
-            $arquivo = $_FILES['foto-perfil'];
+        // Se veio imagem recortada via cropper (base64)
+        if (!empty($_POST['foto_perfil_data']) && $user_id === $num_id) {
+            $imgData = $_POST['foto_perfil_data'];
+            if (preg_match('/^data:(image\/png|image\/jpeg);base64,(.*)$/', $imgData, $m)) {
+                $mime = $m[1]; $data = base64_decode($m[2]); if ($data === false) die('Falha ao decodificar imagem!');
+                $ext = ($mime === 'image/png') ? 'png' : 'jpg';
+                $pasta = "../arquivos/"; $novoNomeDoArquivo = uniqid(); $path = $pasta . $novoNomeDoArquivo . '.' . $ext; file_put_contents($path, $data);
+                $path_db = 'arquivos/' . $novoNomeDoArquivo . '.' . $ext; mysqli_query($conexao, "UPDATE usuarios SET foto='$path_db' WHERE idusuarios='$user_id'"); header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $num_id); exit();
+            }
+        }
+
+        // Fallback: upload clássico (suporta `foto-perfil` antigo ou `foto-perfil-file`)
+        if ((isset($_FILES['foto-perfil']) && $user_id === $num_id) || (isset($_FILES['foto-perfil-file']) && $user_id === $num_id)) {
+            $arquivo = isset($_FILES['foto-perfil-file']) ? $_FILES['foto-perfil-file'] : $_FILES['foto-perfil'];
             if($arquivo['size'] > 2097152 * 25)
                 die("Arquivo muito grande! Max: 50MB");
             if($arquivo['error'])
@@ -64,17 +75,6 @@
 
             if($extensao != 'jpg' && $extensao != 'png')
                 die('Tipo de arquivo inválido! Use JPG ou PNG.');
-
-            // Validar proporção 1:1 (quadrada)
-            $img_info = getimagesize($arquivo['tmp_name']);
-            if ($img_info === false)
-                die('Erro ao processar imagem!');
-            
-            $largura = $img_info[0];
-            $altura = $img_info[1];
-            
-            if ($largura != $altura)
-                die('A imagem deve ter proporção 1:1 (quadrada)!');
 
             $path = $pasta . $novoNomeDoArquivo . '.' . $extensao;
             $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path);
@@ -183,7 +183,8 @@
 
 
                             <form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">
-                                <input type="file" name="foto-perfil" id="foto-perfil-input" accept="image/jpeg,image/png" onchange="document.getElementById('foto-form').submit();">
+                                <input type="file" name="foto-perfil-file" id="foto-perfil-input" accept="image/jpeg,image/png">
+                                <input type="hidden" name="foto_perfil_data" id="foto_perfil_data">
                             </form>
 
                             <div id="emocao-modal" style="display:none; position: absolute; z-index: 100; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
@@ -445,6 +446,18 @@
             </section>
         </div>
     </main>
+    <link rel="stylesheet" href="../scripts/image-cropper.css">
+    <script src="../scripts/image-cropper.js"></script>
+    <script>
+        // bind profile file input to cropper and auto-submit foto-form
+        document.addEventListener('DOMContentLoaded', function(){
+            const fileInput = document.getElementById('foto-perfil-input');
+            const hidden = document.getElementById('foto_perfil_data');
+            if (fileInput && hidden) {
+                bindInputToCropper(fileInput, hidden, document.getElementById('main-profile-img'), 'foto-form');
+            }
+        });
+    </script>
     <script>
         // Espera o DOM carregar completamente antes de executar o script
         document.addEventListener("DOMContentLoaded", function() {
