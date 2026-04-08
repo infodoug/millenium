@@ -40,7 +40,7 @@
     background-color: white;
     overflow: hidden;
     text-align: center;
-    border-radius: 20px;
+    border-radius: 5px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
     form {
@@ -59,7 +59,7 @@
 
   .form-fields input {
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     box-shadow:inset 4px 4px 8px rgba(0, 0, 0, 0.25);
     height: 45px;
     width: 257px;
@@ -77,7 +77,7 @@
   .inputSubmit {
     font-family: 'Exo','Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     border: none;
-    border-radius: 20px;
+    border-radius: 5px;
     background-color: #A622A6;
     color: white;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
