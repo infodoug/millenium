@@ -9,12 +9,24 @@ const suggestionsList = document.getElementById('suggestions');
 const users = <?php echo json_encode($search_user_data); ?>; // Convertendo dados PHP para JSON
 const user_logado = <?php echo json_encode($user_data); ?>; // Convertendo dados PHP para JSON
 
+// Normaliza strings removendo compatibilidades/unicode decorativo e diacríticos
+function normalizeString(str) {
+    if (!str) return '';
+    try {
+        // NFKD faz decomposição compatível (ex: 𝓗 -> H)
+        return str.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    } catch (e) {
+        // Caso o ambiente não suporte normalize, cai para fallback simples
+        return str.replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+}
+
 searchInput.addEventListener('input', function () {
-    const inputValue = this.value.toLowerCase();
+    const inputValue = normalizeString(this.value);
     let suggestions = [];
     if (inputValue.length > 0) {
         suggestions = users.filter(user =>
-            user['nome'].toLowerCase().includes(inputValue)
+            normalizeString(user['nome']).includes(inputValue)
         );
         displaySuggestions(suggestions);
     } else {
