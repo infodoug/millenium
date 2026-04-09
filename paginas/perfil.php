@@ -7,7 +7,7 @@
 
     // dados do usuário logado
     $logado = $_SESSION['email'];
-    $result = $conexao->query("SELECT idusuarios, nome, foto, bio, emocao_emoji, emocao_texto FROM usuarios WHERE email='$logado'");
+    $result = $conexao->query("SELECT idusuarios, nome, foto, bio, emocao_emoji, emocao_texto, capa FROM usuarios WHERE email='$logado'");
     $user_data = mysqli_fetch_assoc($result);
     $user_id = (int) $user_data['idusuarios'];
     
@@ -55,8 +55,67 @@
             if (preg_match('/^data:(image\/png|image\/jpeg);base64,(.*)$/', $imgData, $m)) {
                 $mime = $m[1]; $data = base64_decode($m[2]); if ($data === false) die('Falha ao decodificar imagem!');
                 $ext = ($mime === 'image/png') ? 'png' : 'jpg';
-                $pasta = "../arquivos/"; $novoNomeDoArquivo = uniqid(); $path = $pasta . $novoNomeDoArquivo . '.' . $ext; file_put_contents($path, $data);
-                $path_db = 'arquivos/' . $novoNomeDoArquivo . '.' . $ext; mysqli_query($conexao, "UPDATE usuarios SET foto='$path_db' WHERE idusuarios='$user_id'"); header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $num_id); exit();
+                $pasta = "../arquivos/"; $novoNomeDoArquivo = uniqid(); $path = $pasta . $novoNomeDoArquivo . '.' . $ext;
+                $saved = file_put_contents($path, $data);
+                if ($saved === false) die('Falha ao salvar arquivo!');
+                $path_db = 'arquivos/' . $novoNomeDoArquivo . '.' . $ext;
+                // remove previous profile image file if it was stored in the arquivos/ folder
+                if (!empty($user_data['foto']) && strpos($user_data['foto'], 'arquivos/') === 0) {
+                    $oldFull = __DIR__ . '/../' . $user_data['foto'];
+                    if (file_exists($oldFull)) @unlink($oldFull);
+                }
+                mysqli_query($conexao, "UPDATE usuarios SET foto='$path_db' WHERE idusuarios='$user_id'"); header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $num_id); exit();
+            }
+        }
+
+        // Se veio imagem de CAPA recortada via cropper (base64)
+        if (!empty($_POST['foto_capa_data']) && $user_id === $num_id) {
+            $imgData = $_POST['foto_capa_data'];
+            if (preg_match('/^data:(image\/png|image\/jpeg);base64,(.*)$/', $imgData, $m)) {
+                $mime = $m[1]; $data = base64_decode($m[2]); if ($data === false) die('Falha ao decodificar imagem!');
+                $ext = ($mime === 'image/png') ? 'png' : 'jpg';
+                $pasta = "../arquivos/"; $novoNomeDoArquivo = uniqid('capa_'); $path = $pasta . $novoNomeDoArquivo . '.' . $ext;
+                $saved = file_put_contents($path, $data);
+                if ($saved === false) die('Falha ao salvar arquivo!');
+                $path_db = 'arquivos/' . $novoNomeDoArquivo . '.' . $ext;
+                // remove previous cover image file if it was stored in the arquivos/ folder
+                if (!empty($user_data['capa']) && strpos($user_data['capa'], 'arquivos/') === 0) {
+                    $oldFull = __DIR__ . '/../' . $user_data['capa'];
+                    if (file_exists($oldFull)) @unlink($oldFull);
+                }
+                mysqli_query($conexao, "UPDATE usuarios SET capa='$path_db' WHERE idusuarios='$user_id'"); header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $num_id); exit();
+            }
+        }
+
+        // Fallback: upload clássico para capa (suporta `foto-capa-file`)
+        if (isset($_FILES['foto-capa-file']) && $user_id === $num_id) {
+            $arquivo = $_FILES['foto-capa-file'];
+            if($arquivo['size'] > 2097152 * 25)
+                die("Arquivo muito grande! Max: 50MB");
+            if($arquivo['error'])
+                die("Falha ao enviar arquivo!");
+
+            $pasta = "../arquivos/";
+            $nomeDoArquivo = $arquivo['name'];
+            $novoNomeDoArquivo = uniqid('capa_');
+            $extensao = strtolower(pathinfo($nomeDoArquivo, PATHINFO_EXTENSION));
+
+            if($extensao != 'jpg' && $extensao != 'png')
+                die('Tipo de arquivo inválido! Use JPG ou PNG.');
+
+            $path = $pasta . $novoNomeDoArquivo . '.' . $extensao;
+            $deu_certo = move_uploaded_file($arquivo['tmp_name'], $path);
+
+            if ($deu_certo) {
+                $path_db = "arquivos/" . $novoNomeDoArquivo . '.' . $extensao;
+                // remove previous cover image file if it was stored in the arquivos/ folder
+                if (!empty($user_data['capa']) && strpos($user_data['capa'], 'arquivos/') === 0) {
+                    $oldFull = __DIR__ . '/../' . $user_data['capa'];
+                    if (file_exists($oldFull)) @unlink($oldFull);
+                }
+                mysqli_query($conexao, "UPDATE usuarios SET capa='$path_db' WHERE idusuarios='$user_id'");
+                header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $num_id);
+                exit();
             }
         }
 
@@ -82,6 +141,11 @@
             if ($deu_certo) {
                 // Atualizar foto no banco de dados
                 $path_db = "arquivos/" . $novoNomeDoArquivo . '.' . $extensao;
+                // remove previous profile image file if it was stored in the arquivos/ folder
+                if (!empty($user_data['foto']) && strpos($user_data['foto'], 'arquivos/') === 0) {
+                    $oldFull = __DIR__ . '/../' . $user_data['foto'];
+                    if (file_exists($oldFull)) @unlink($oldFull);
+                }
                 mysqli_query($conexao, "UPDATE usuarios SET foto='$path_db' WHERE idusuarios='$user_id'");
                 
                 // Redirecionar para recarregar a página com a nova foto
@@ -164,6 +228,7 @@
         <div class="container-perfil">
             <div class="center-perfil">
                 <div class="header-perfil">
+                    <div class="capa" id="capa-div" style="background-image: url('../<?php echo isset($user_data['capa']) && $user_data['capa'] ? $user_data['capa'] : '' ?>');"></div>
                     <div  style="cursor: pointer;" onclick="document.getElementById('foto-perfil-input').click();">
                         <img class="foto" height="170" width="170" src='../<?php echo $user_data['foto']; ?>' alt='Foto de perfil' id="main-profile-img">
                     </div>
@@ -185,6 +250,11 @@
                             <form id="foto-form" method="POST" enctype="multipart/form-data" style="display: none;">
                                 <input type="file" name="foto-perfil-file" id="foto-perfil-input" accept="image/jpeg,image/png">
                                 <input type="hidden" name="foto_perfil_data" id="foto_perfil_data">
+                            </form>
+
+                            <form id="capa-form" method="POST" enctype="multipart/form-data" style="display: none;">
+                                <input type="file" name="foto-capa-file" id="foto-capa-input" accept="image/jpeg,image/png">
+                                <input type="hidden" name="foto_capa_data" id="foto_capa_data">
                             </form>
 
                             <div id="emocao-modal" style="display:none; position: absolute; z-index: 100; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
@@ -455,6 +525,20 @@
             const hidden = document.getElementById('foto_perfil_data');
             if (fileInput && hidden) {
                 bindInputToCropper(fileInput, hidden, document.getElementById('main-profile-img'), 'foto-form');
+            }
+            // bind cover input to cropper (rectangular)
+            const capaInput = document.getElementById('foto-capa-input');
+            const capaHidden = document.getElementById('foto_capa_data');
+            const capaPreview = document.getElementById('capa-div');
+            if (capaInput && capaHidden && capaPreview) {
+                // For cover images, open cropper with target output 850x400
+                bindInputToCropper(capaInput, capaHidden, capaPreview, 'capa-form', { stageWidth: 850, stageHeight: 400 });
+                // allow owner to click the cover area to change it
+                <?php if ($user_id === $num_id): ?>
+                capaPreview.addEventListener('click', function(){
+                    capaInput.click();
+                });
+                <?php endif; ?>
             }
         });
     </script>

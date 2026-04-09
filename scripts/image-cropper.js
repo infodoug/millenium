@@ -1,5 +1,6 @@
 // Simple cropper modal with pan and zoom. Produces a square (1:1) PNG dataURL.
-function showImageCropper(file) {
+function showImageCropper(file, opts = {}) {
+  // opts: { stageWidth, stageHeight } - optional dimensions for rectangular crop
   return new Promise((resolve, reject) => {
     if (!file) return reject('No file');
     const reader = new FileReader();
@@ -13,6 +14,23 @@ function showImageCropper(file) {
 
       const stage = document.createElement('div');
       stage.className = 'img-cropper-stage';
+      // allow custom stage size for cover-like crops
+      let desiredStageW = opts.stageWidth || null;
+      let desiredStageH = opts.stageHeight || null;
+      if (desiredStageW && desiredStageH) {
+        // compute displayed stage size constrained to viewport while preserving aspect
+        const maxW = Math.max(200, window.innerWidth - 40);
+        const maxH = Math.max(120, window.innerHeight - 80);
+        let scale = Math.min(1, maxW / desiredStageW, maxH / desiredStageH);
+        const displayW = Math.round(desiredStageW * scale);
+        const displayH = Math.round(desiredStageH * scale);
+        stage.style.width = displayW + 'px';
+        stage.style.height = displayH + 'px';
+        stage.classList.add('img-cropper-rect');
+      } else {
+        if (opts.stageWidth) stage.style.width = (opts.stageWidth + 'px');
+        if (opts.stageHeight) stage.style.height = (opts.stageHeight + 'px');
+      }
       const img = document.createElement('img');
       img.src = dataUrl;
       stage.appendChild(img);
@@ -68,9 +86,12 @@ function showImageCropper(file) {
 
       cancelBtn.addEventListener('click', ()=>{ cleanup(); reject('cancel'); });
       acceptBtn.addEventListener('click', ()=>{
-        // crop square from stage
-        const size = Math.min(stage.clientWidth, stage.clientHeight);
-        const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size; const ctx = canvas.getContext('2d'); const scaleX = naturalW / img.clientWidth; const scaleY = naturalH / img.clientHeight; const sx = Math.max(0, -px(img.style.left)) * scaleX; const sy = Math.max(0, -px(img.style.top)) * scaleY; const sSize = size * scaleX; ctx.drawImage(img, sx, sy, sSize, sSize, 0, 0, size, size); const out = canvas.toDataURL('image/png'); cleanup(); resolve(out);
+        // crop the visible stage area (respecting stage aspect)
+        const displayW = stage.clientWidth; const displayH = stage.clientHeight;
+        // if desired output size provided, produce output at that resolution (e.g., 850x400)
+        const outputW = (opts.stageWidth && opts.stageHeight) ? opts.stageWidth : displayW;
+        const outputH = (opts.stageWidth && opts.stageHeight) ? opts.stageHeight : displayH;
+        const canvas = document.createElement('canvas'); canvas.width = outputW; canvas.height = outputH; const ctx = canvas.getContext('2d'); const scaleX = naturalW / img.clientWidth; const scaleY = naturalH / img.clientHeight; const sx = Math.max(0, -px(img.style.left)) * scaleX; const sy = Math.max(0, -px(img.style.top)) * scaleY; const sW = displayW * scaleX; const sH = displayH * scaleY; ctx.drawImage(img, sx, sy, sW, sH, 0, 0, outputW, outputH); const out = canvas.toDataURL('image/png'); cleanup(); resolve(out);
       });
 
       function cleanup(){ img.removeEventListener('mousedown', down); window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); img.removeEventListener('touchstart', down); window.removeEventListener('touchmove', move); window.removeEventListener('touchend', up); stage.removeEventListener('wheel', wheel); document.body.removeChild(overlay); }
@@ -80,6 +101,16 @@ function showImageCropper(file) {
 }
 
 // Convenience: bind file input to cropper and set hidden input; optionally auto-submit form
-function bindInputToCropper(inputEl, hiddenEl, previewEl, autoSubmitForm){
-  inputEl.addEventListener('change', function(){ const f = this.files[0]; if(!f) return; showImageCropper(f).then(dataUrl=>{ hiddenEl.value = dataUrl; if(previewEl){ previewEl.innerHTML = ''; const im = document.createElement('img'); im.src = dataUrl; im.style.width='100%'; im.style.height='100%'; im.style.objectFit='cover'; im.style.borderRadius='50%'; previewEl.appendChild(im); } if(autoSubmitForm){ const form = inputEl.closest('form') || document.getElementById(autoSubmitForm); if(form) form.submit(); } }).catch(()=>{}); });
+function bindInputToCropper(inputEl, hiddenEl, previewEl, autoSubmitForm, opts={}){
+  inputEl.addEventListener('change', function(){ const f = this.files[0]; if(!f) return; showImageCropper(f, opts).then(dataUrl=>{ hiddenEl.value = dataUrl; if(previewEl){ // preview differently for profile (circle) vs cover (div with background)
+      if (previewEl.tagName === 'DIV') {
+        previewEl.style.backgroundImage = 'url("'+dataUrl+'")';
+        previewEl.style.backgroundSize = 'cover';
+        previewEl.style.backgroundPosition = 'center';
+      } else {
+        previewEl.innerHTML = ''; const im = document.createElement('img'); im.src = dataUrl; im.style.width='100%'; im.style.height='100%'; im.style.objectFit='cover'; previewEl.appendChild(im);
+      }
+    }
+    if(autoSubmitForm){ const form = inputEl.closest('form') || document.getElementById(autoSubmitForm); if(form) form.submit(); }
+  }).catch(()=>{}); });
 }
