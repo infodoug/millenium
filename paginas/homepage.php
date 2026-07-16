@@ -516,57 +516,105 @@
             // ==========================================
             
             const commentEmojiBtns = document.querySelectorAll('.comment-emoji-btn');
+            const commentEmojiPicker = (() => {
+                let picker = document.getElementById('global-comment-emoji-picker');
+                if (!picker) {
+                    picker = document.createElement('div');
+                    picker.id = 'global-comment-emoji-picker';
+                    picker.className = 'comment-emoji-picker';
+                    picker.style.position = 'absolute';
+                    picker.style.display = 'none';
+                    picker.style.zIndex = '9999';
+                    picker.style.background = 'white';
+                    picker.style.border = '1px solid #ccc';
+                    picker.style.padding = '8px';
+                    picker.style.borderRadius = '8px';
+                    picker.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+                    picker.style.maxHeight = '320px';
+                    picker.style.overflowY = 'auto';
+                    picker.style.minWidth = '220px';
+                    document.body.appendChild(picker);
+                }
+                return picker;
+            })();
+            let commentEmojiEditor = null;
+            let activeCommentButton = null;
+
+            function positionCommentEmojiPicker(button) {
+                const rect = button.getBoundingClientRect();
+                commentEmojiPicker.style.visibility = 'hidden';
+                commentEmojiPicker.style.display = 'block';
+                commentEmojiPicker.style.top = '0px';
+                commentEmojiPicker.style.left = '0px';
+
+                const pickerHeight = commentEmojiPicker.offsetHeight;
+                const pickerWidth = commentEmojiPicker.offsetWidth;
+                let top = window.scrollY + rect.top - pickerHeight - 8;
+                let left = window.scrollX + rect.left;
+
+                if (top < window.scrollY + 8) {
+                    top = window.scrollY + rect.bottom + 8;
+                }
+                if (left + pickerWidth > window.scrollX + window.innerWidth - 8) {
+                    left = window.scrollX + window.innerWidth - pickerWidth - 8;
+                }
+                if (left < 8) {
+                    left = 8;
+                }
+
+                commentEmojiPicker.style.top = `${top}px`;
+                commentEmojiPicker.style.left = `${left}px`;
+                commentEmojiPicker.style.visibility = 'visible';
+            }
+
+            commentEmojiPicker.addEventListener('click', function(event) {
+                if (event.target.tagName === 'IMG' && commentEmojiEditor) {
+                    commentEmojiEditor.focus();
+
+                    const imgSrc = event.target.src;
+                    const imgAlt = event.target.alt;
+                    const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px; width: 18px; height: 18px;">`;
+                    document.execCommand('insertHTML', false, imgTag);
+                }
+            });
 
             commentEmojiBtns.forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
 
-                    // O container do picker está logo depois do botão no HTML
-                    const pickerContainer = this.nextElementSibling; 
-                    // O editor do comentário está no mesmo formulário
                     const form = this.closest('.comment-form');
-                    const editorDiv = form.querySelector('.comment-input');
+                    const editorDiv = form ? form.querySelector('.comment-input') : null;
+                    if (!editorDiv) return;
 
-                    // Se o picker estiver vazio, carrega o HTML
-                    if (pickerContainer.innerHTML === "") {
+                    if (activeCommentButton === this && commentEmojiPicker.style.display === 'block') {
+                        commentEmojiPicker.style.display = 'none';
+                        activeCommentButton = null;
+                        return;
+                    }
+
+                    activeCommentButton = this;
+                    commentEmojiEditor = editorDiv;
+
+                    if (commentEmojiPicker.innerHTML.trim() === '') {
                         fetch('../components/new-post/emoji-tab.html')
                             .then(res => res.text())
                             .then(html => {
-                                pickerContainer.innerHTML = html;
-                                
-                                // Adiciona o evento de clique nos emojis
-                                pickerContainer.addEventListener('click', (event) => {
-                                    if(event.target.tagName === 'IMG') {
-                                        editorDiv.focus();
-                                        
-                                        const imgSrc = event.target.src;
-                                        const imgAlt = event.target.alt;
-                                        // Tag da imagem com largura fixa para não ficar gigante no comentário
-                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px; width: 18px; height: 18px;">`;
-                                        
-                                        document.execCommand('insertHTML', false, imgTag);
-                                    }
-                                });
+                                commentEmojiPicker.innerHTML = html;
+                                positionCommentEmojiPicker(this);
                             });
+                    } else {
+                        positionCommentEmojiPicker(this);
                     }
 
-                    // Alternar a visibilidade
-                    if (pickerContainer.style.display === 'none' || pickerContainer.style.display === '') {
-                        // Fecha todos os outros pickers abertos antes de abrir este (opcional, mas evita bagunça)
-                        document.querySelectorAll('.comment-emoji-picker').forEach(p => p.style.display = 'none');
-                        pickerContainer.style.display = 'block';
-                    } else {
-                        pickerContainer.style.display = 'none';
-                    }
+                    commentEmojiPicker.style.display = 'block';
                 });
             });
 
             // Fechar os pickers de comentário ao clicar em qualquer lugar fora deles
             document.addEventListener('click', function(event) {
-                if (!event.target.closest('.comment-emoji-btn') && !event.target.closest('.comment-emoji-picker')) {
-                    document.querySelectorAll('.comment-emoji-picker').forEach(picker => {
-                        picker.style.display = 'none';
-                    });
+                if (!event.target.closest('.comment-emoji-btn') && !event.target.closest('#global-comment-emoji-picker')) {
+                    commentEmojiPicker.style.display = 'none';
+                    activeCommentButton = null;
                 }
             });
 

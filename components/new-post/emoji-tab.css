@@ -1,8 +1,8 @@
 .emoji-tab {
-    background-color: #d8d8d8; /* Corrigido de azul para branco para visualização */
+    background-color: #fdfdfd;; /* Corrigido de azul para branco para visualização */
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    height: auto; /* Aumentei um pouco */
+    height: auto;
     width: 220px;
     border-radius: 8px;
     padding: 10px;
@@ -12,4 +12,15 @@
     position: absolute;
     top: 20px;
     z-index: 3;
+}
+
+.emoji-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 13px;
+}
+
+.emoji-list img {
+    align-self: center;
+    justify-self: center;
 }

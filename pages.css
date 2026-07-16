@@ -276,6 +276,26 @@ textarea {
   position: relative;
 }
 
+#global-comment-emoji-picker {
+  position: absolute;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  max-height: 320px;
+  overflow-y: auto;
+  min-width: 220px;
+}
+
+#global-comment-emoji-picker .emoji-tab {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
 .post-separator {
   margin-bottom: 20px;
 }
