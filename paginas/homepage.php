@@ -14,7 +14,7 @@
     include('../config.php');
     include('../configs/arquivo-config.php');
     
-    $sql = "SELECT idusuarios, nome, foto FROM usuarios WHERE email='$logado'";
+    $sql = "SELECT idusuarios, nome, foto, bio FROM usuarios WHERE email='$logado'";
     $sql_nome = "SELECT nome FROM usuarios WHERE email='$logado'";
     $result = $conexao->query($sql);
     ($user_data = mysqli_fetch_assoc($result));
@@ -186,6 +186,13 @@
                         <?php
                             echo $user_data['nome'];
                             /* echo $user_id; */
+                        ?>
+                    </div>
+                    <div class="mini-bio">
+                        <?php
+                            echo !empty($user_data['bio'])
+                                ? nl2br(htmlspecialchars(strip_tags($user_data['bio'])))
+                                : 'Nenhuma biografia definida.';
                         ?>
                     </div>
                 </div>
