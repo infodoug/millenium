@@ -164,6 +164,17 @@
 
             // Aqui você insere na sua tabela de comentários (exemplo):
             mysqli_query($conexao, "INSERT INTO comentarios (postid, userid, comentario) VALUES ('$post_id_comentado', '$user_id', '$texto_comentario')");
+            // notificação para o dono do post quando outro usuário comentar
+            $res_owner = $conexao->query("SELECT userid FROM posts WHERE postid='" . intval($post_id_comentado) . "' LIMIT 1");
+            if ($res_owner && ($row_owner = $res_owner->fetch_assoc())) {
+                $post_owner = (int)$row_owner['userid'];
+                if ($post_owner !== (int)$user_id) {
+                    $autor_nome = $user_data['nome'];
+                    $link = ($post_owner === $user_id) ? '/millenium/paginas/perfil.php#post-' . intval($post_id_comentado) : '/millenium/paginas/perfil-pesquisado.php?id=' . $post_owner . '#post-' . intval($post_id_comentado);
+                    $texto_not = $conexao->real_escape_string($autor_nome . ' comentou no seu post.');
+                    $conexao->query("INSERT INTO notifications (user_id, actor_id, type, link, text) VALUES ('" . $post_owner . "', '" . $user_id . "', 'comment_post', '" . $conexao->real_escape_string($link) . "', '" . $texto_not . "')");
+                }
+            }
             
             echo "<script>alert('$texto_comentario');</script>";
 
@@ -200,6 +211,14 @@
                 $sql_mural = "INSERT INTO mural (autor_id, perfil_id, mensagem) VALUES ('$user_id', '$perfil_destino', '$mensagem_mural')";
                 mysqli_query($conexao, $sql_mural);
                 
+                // Insere notificação para dono do perfil (se não for o próprio autor)
+                if ($perfil_destino !== $user_id) {
+                    $autor_nome = $user_data['nome'];
+                    $link = ($perfil_destino === $user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $perfil_destino;
+                    $texto = $conexao->real_escape_string($autor_nome . ' escreveu no seu mural.');
+                    $conexao->query("INSERT INTO notifications (user_id, actor_id, type, link, text) VALUES ('$perfil_destino', '$user_id', 'mural_post', '$link', '$texto')");
+                }
+
                 // Redireciona para evitar reenvio de formulário
                 header("Location: " . $_SERVER['PHP_SELF'] . "?id=" . $perfil_destino);
                 exit();
@@ -224,6 +243,7 @@
 </head>
 <body>
     <div id="header-container"></div>
+    <script>window.currentUserId = <?php echo (int)$user_id; ?>;</script>
     <main>
         <div class="container-perfil">
             <div class="center-perfil">
@@ -408,7 +428,9 @@
                                 echo '<div class="comment">';
                                     echo '<div class="comment-header">';
                                     echo '<img width="20" src="../' . $c['foto'] . '">';
-                                    echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                    $cUser = intval($c['userid']);
+                                    $cHref = ($cUser === (int)$user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $cUser;
+                                    echo '<a class="comment-author" href="' . $cHref . '"><strong>' . htmlspecialchars($c['nome']) . '</strong></a>';
                                     
                                     // Mostrar menu apenas para comentários do usuário logado
                                     if ((int)$c['userid'] === $user_id) {
@@ -499,7 +521,9 @@
                                 echo '<div class="mural-item">';
                                     echo '<div class="mural-item-header">';
                                         echo '<img src="../' . $recado['foto'] . '" width="30" height="30">';
-                                        echo '<strong>' . htmlspecialchars($recado['nome']) . '</strong>';
+                                        $ra = intval($recado['autor_id']);
+                                        $rHref = ($ra === (int)$user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $ra;
+                                        echo '<a class="mural-author" href="' . $rHref . '"><strong>' . htmlspecialchars($recado['nome']) . '</strong></a>';
                                         /* echo '<span class="mural-date">' . date('d/m/H:i', strtotime($recado['data_postagem'])) . '</span>'; */
                                     echo '</div>';
                                     // Usa o strip_tags para liberar APENAS a tag <img>, igual aos comentários
@@ -707,7 +731,7 @@
                                             const imgAlt = event.target.alt;
                                             
                                             // Monta a tag HTML da imagem (com um tamanho reduzido para parecer texto)
-                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style=" vertical-align: middle; margin: 0 2px;">`;
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="height:30px; width:auto; vertical-align: middle; margin: 0 2px;">`;
                                             
                                             // Insere a tag HTML da imagem onde o cursor do usuário está
                                             document.execCommand('insertHTML', false, imgTag);
@@ -764,7 +788,7 @@
                                         const imgSrc = event.target.src;
                                         const imgAlt = event.target.alt;
                                         // Tag da imagem com largura fixa para não ficar gigante no comentário
-                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
+                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="height:20px; width:auto; vertical-align: middle; margin: 0 2px;">`;
                                         
                                         document.execCommand('insertHTML', false, imgTag);
                                     }
@@ -838,7 +862,7 @@
                                         
                                         const imgSrc = event.target.src;
                                         const imgAlt = event.target.alt;
-                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
+                                        const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="height:20px; width:auto; vertical-align: middle; margin: 0 2px;">`;
                                         
                                         document.execCommand('insertHTML', false, imgTag);
                                     }
@@ -919,7 +943,7 @@
                                             bioEditorDiv.focus();
                                             const imgSrc = event.target.src;
                                             const imgAlt = event.target.alt;
-                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="vertical-align: middle; margin: 0 2px;">`;
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="height:20px; width:auto; vertical-align: middle; margin: 0 2px;">`;
                                             document.execCommand('insertHTML', false, imgTag);
                                         }
                                     });

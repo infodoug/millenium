@@ -80,6 +80,8 @@
         include('../../components/header/header.html'); 
     ?>
 
+  <script>window.currentUserId = <?php echo (int)$user_id; ?>;</script>
+
   <h1 class="friends-title">Meus amigos</h1>
 
   <hr>
@@ -104,7 +106,8 @@ echo '</pre>'; */
     ?>
 
     <div class="pendente-container">
-      <a class="pendente-infos" href="/millenium/paginas/perfil-pesquisado.php?id=<?php echo (int)$user_pendente['idusuarios']; ?>"></a>
+      <?php $pendId = (int)$user_pendente['idusuarios']; $pendHref = ($pendId === $user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $pendId; ?>
+      <a class="pendente-infos" href="<?php echo $pendHref; ?>"></a>
       <div class="img-container">
         <img src="../../<?php echo $user_pendente['foto'] ?>" alt="">
       </div>
@@ -149,7 +152,8 @@ echo '</pre>'; */
           ? '/millenium/' . $friend_data['foto']
           : '/millenium/assets/icons/default-avatar.png';
     ?>
-      <a class="friend" href="/millenium/paginas/perfil-pesquisado.php?id=<?php echo (int)$friend_id; ?>">
+      <?php $fId = (int)$friend_id; $fHref = ($fId === $user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $fId; ?>
+      <a class="friend" href="<?php echo $fHref; ?>">
         <div class="container-friend-photo">
           <img class="friend-photo" src="<?php echo htmlspecialchars($photo_path); ?>" alt="<?php echo htmlspecialchars($friend_data['nome']); ?>">
         </div>

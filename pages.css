@@ -348,3 +348,10 @@ textarea {
   margin-top: 5px;
   justify-content: space-between;
 }
+
+
+.post-author, .comment-author, .mural-author {
+  padding-left: 5px;
+  color: #800080;
+  text-decoration: none;
+}

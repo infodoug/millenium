@@ -39,6 +39,17 @@
 
             // Aqui você insere na sua tabela de comentários (exemplo):
             mysqli_query($conexao, "INSERT INTO comentarios (postid, userid, comentario) VALUES ('$post_id_comentado', '$user_id', '$texto_comentario')");
+            // notificação para o dono do post quando outro usuário comentar
+            $res_owner = $conexao->query("SELECT userid FROM posts WHERE postid='" . intval($post_id_comentado) . "' LIMIT 1");
+            if ($res_owner && ($row_owner = $res_owner->fetch_assoc())) {
+                $post_owner = (int)$row_owner['userid'];
+                if ($post_owner !== (int)$user_id) {
+                    $autor_nome = $user_data['nome'];
+                    $link = '/millenium/paginas/homepage.php?id=' . $post_owner . '#post-' . intval($post_id_comentado);
+                    $texto_not = $conexao->real_escape_string($autor_nome . ' comentou no seu post.');
+                    $conexao->query("INSERT INTO notifications (user_id, actor_id, type, link, text) VALUES ('" . $post_owner . "', '" . $user_id . "', 'comment_post', '" . $conexao->real_escape_string($link) . "', '" . $texto_not . "')");
+                }
+            }
             
             echo "<script>alert('$texto_comentario');</script>";
 
@@ -154,6 +165,7 @@
 </head>
 <body>
     <div id="header-container"></div>
+    <script>window.currentUserId = <?php echo (int)$user_id; ?>;</script>
     <main>
         <div class="container">
             <div class="mini-perfil">
@@ -194,7 +206,9 @@
                                 echo '<div class="post" data-created-at="' . htmlspecialchars($post_created_at) . '">';
                                 echo '<div class="post-header">';
                                 echo '<img height="20" width="20" src="' . htmlspecialchars($author_photo) . '" alt="erro na imagem"></img>';
-                                echo '<p>' . $author_name . '</p>';
+                                $authorId = intval($linhapost['userid']);
+                                $authorHref = ($authorId === (int)$user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $authorId;
+                                echo '<a class="post-author" href="' . $authorHref . '"><strong>' . $author_name . '</strong></a>';
                                 
                                 // Mostrar menu apenas para posts do usuário logado
                                 if ((int)$linhapost['userid'] == (int)$user_id && ($linhapost['is_deleted'] == 0)) {
@@ -273,7 +287,9 @@
                                     echo '<div class="comment">';
                                         echo '<div class="comment-header">';
                                         echo '<img width="20" src="../' . $c['foto'] . '">';
-                                        echo '<strong>' . htmlspecialchars($c['nome']) . '</strong>';
+                                        $cUserId = intval($c['userid']);
+                                        $cHref = ($cUserId === (int)$user_id) ? '/millenium/paginas/perfil.php' : '/millenium/paginas/perfil-pesquisado.php?id=' . $cUserId;
+                                        echo '<a class="comment-author" href="' . $cHref . '"><strong>' . htmlspecialchars($c['nome']) . '</strong></a>';
                                         
                                         // Mostrar menu apenas para comentários do usuário logado
                                         if ((int)$c['userid'] === $user_id) {
@@ -462,7 +478,7 @@
                                             const imgAlt = event.target.alt;
                                             
                                             // Monta a tag HTML da imagem (com um tamanho reduzido para parecer texto)
-                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style=" vertical-align: middle; margin: 0 2px;">`;
+                                            const imgTag = `<img src="${imgSrc}" alt="${imgAlt}" style="max-height:30px; width:auto; vertical-align: middle; margin: 0 2px;">`;
                                             
                                             // Insere a tag HTML da imagem onde o cursor do usuário está
                                             document.execCommand('insertHTML', false, imgTag);
